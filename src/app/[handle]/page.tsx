@@ -42,12 +42,27 @@ export default async function HandlePage({ params }: PageProps<"/[handle]">) {
       ? tSpec(profile.specialization)
       : profile.specialization;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    mainEntity: {
+      "@type": "Person",
+      name: profile.display_name,
+      description: profile.headline ?? undefined,
+      image: profile.avatar_url ?? undefined,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/${profile.username}`,
+    },
+  };
+
   return (
-    <PublicProfileView
-      profile={profile}
-      works={works}
-      specializationLabel={specializationLabel}
-      initialOpenWorkId={null}
-    />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <PublicProfileView
+        profile={profile}
+        works={works}
+        specializationLabel={specializationLabel}
+        initialOpenWorkId={null}
+      />
+    </>
   );
 }
