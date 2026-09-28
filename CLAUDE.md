@@ -12,28 +12,55 @@ up to date as work proceeds. Read both before making structural changes.
 
 ## Current status (update this section as stages progress)
 
-Stage 1 (MVP) is in progress. Built so far:
-- Project scaffold: Next.js 16 (App Router, Turbopack), TypeScript strict, Tailwind v4.
-- Hand-rolled shadcn/ui-style primitives in `src/components/ui/*` (the
-  `shadcn` CLI's registry host is not reachable from this environment's
-  network policy — components were written directly against Radix
-  primitives instead of generated).
-- Design tokens + light/dark/system theme (`src/app/globals.css`, `next-themes`).
-- Pro accent-color palette with pre-checked contrast (`src/lib/accent-colors.ts`).
-- Core business logic: plan limits, specializations, reserved usernames,
-  URL normalization, source-type detection, SSRF guard, iframe-allowed
-  check, Zod validation schemas (`src/lib/**`).
-- Supabase schema for every stage-1 table + RLS policies + storage buckets
-  (`supabase/migrations/*.sql`). No live Supabase project is connected yet
-  — see "What the owner still needs to provide" below.
-- i18n scaffold for all 10 locales with full key parity (`messages/*.json`,
-  `src/i18n/*`) — see "Routing architecture" for how locale detection works
-  without next-intl's own routing middleware.
+Stage 1 (MVP) is functionally complete per spec section 14's step list —
+every stage-1 screen and API route exists and builds/lints/tests clean —
+but **nothing has run against a live Supabase project or any of the
+external services yet** (see "What the owner still needs to provide"). Treat
+this as "ready to wire up and test end-to-end," not "verified working."
 
-Not yet built (do these next, in this order, per spec section 14): auth
-pages wired to Supabase Auth, onboarding flow, ingest pipeline job
-processor, public profile page + viewer, dashboard, hire form + email,
-landing + legal pages, admin/moderation, SEO.
+Built:
+- Project scaffold: Next.js 16 (App Router, Turbopack), TypeScript strict,
+  Tailwind v4, hand-rolled shadcn/ui-style primitives on Radix UI in
+  `src/components/ui/*` (the `shadcn` CLI's registry host isn't reachable
+  from this environment's network policy).
+- Design tokens + light/dark/system theme, Pro accent-color palette with
+  pre-checked contrast (`src/app/globals.css`, `src/lib/accent-colors.ts`).
+- Core business logic with unit tests: plan limits, reserved usernames, URL
+  normalization, source-type detection, SSRF guard, iframe-allowed check,
+  slug generation, Zod validation schemas (`src/lib/**`, `*.test.ts`).
+- Supabase schema for every stage-1 table + RLS policies + storage buckets +
+  auth triggers (`supabase/migrations/*.sql`).
+- i18n for all 10 locales with full key parity, checked by
+  `npm run check:i18n` — see "Routing architecture" below for how locale
+  detection works without next-intl's own routing middleware.
+- Auth: Google OAuth, email+password, magic link, login-by-username
+  (server-side email resolution so the client never sees it), Turnstile.
+- Onboarding wizard: username availability, profile basics, bulk link
+  paste with live ingest-status polling, contacts, done screen.
+- Ingest pipeline: URL normalize → Web Risk safety check → source-type
+  detection → per-type metadata/embed (Figma, GitHub+README, YouTube/
+  Vimeo/Loom, Google Docs/Slides, website iframe-vs-screenshot via
+  Microlink) → OpenAI moderation gate → `jobs` queue processed by
+  `/api/cron/process-jobs` with retry backoff.
+- Public profile page, work viewer with adapters per render mode (live
+  iframe with device-width scaling, screenshot scroller, video/generic
+  embed, GitHub card, image gallery, PDF), hire form (rate-limited,
+  moderated, emailed via Resend), report flow, landing page, pricing,
+  legal pages (Terms/Privacy/Refund).
+- Dashboard: overview (stats, checklist, recent requests), works CRUD with
+  drag-and-drop reordering, profile editor, inbox, settings (theme, Pro
+  accent color, language, GDPR export/delete), billing (plan display; no
+  Paddle checkout yet — stage 2).
+- Admin moderation queue (flagged works + open reports, with
+  approve/hide/delete/ban actions logged to `moderation_log`).
+- SEO: sitemap.xml, robots.txt, dynamic OG images, JSON-LD on profiles.
+
+Deliberately deferred to stage 2 per the spec's own plan: Paddle billing,
+the searchable catalog, Facebook/Telegram login, notion/telegram_post/
+behance/dribbble/upload_video/upload_pdf adapters, link-recheck and
+screenshot-refresh cron jobs, Upstash-backed rate limiting on every public
+endpoint (the hire/report routes already call the same rate-limit helper,
+which no-ops until `UPSTASH_REDIS_REST_URL` is set).
 
 ## Stack
 
@@ -61,8 +88,9 @@ landing + legal pages, admin/moderation, SEO.
 - **i18n:** `next-intl`, used for message lookup/formatting only — **not**
   its routing/middleware helpers. See "Routing architecture" below for why.
 - **Metadata & screenshots:** behind a `ScreenshotProvider` interface
-  (`src/lib/services/screenshot/*`, not yet implemented) so Microlink can be
-  swapped for ScreenshotOne or a self-hosted Playwright worker later.
+  (`src/lib/services/screenshot/*`), with a Microlink implementation as the
+  default so it can be swapped for ScreenshotOne or a self-hosted
+  Playwright worker later.
 - **Email:** Resend + React Email.
 - **Payments:** Paddle Billing (Paddle.js overlay + webhooks) — stage 2.
 - **Rate limiting:** Upstash Redis + `@upstash/ratelimit`.
