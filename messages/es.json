@@ -30,7 +30,8 @@
     "login": "Iniciar sesión",
     "signup": "Registrarse",
     "dashboard": "Panel",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "menu": "Menú"
   },
   "footer": {
     "madeWith": "Hecho con Vitrin",
@@ -194,7 +195,8 @@
       "inbox": "Bandeja de entrada",
       "stats": "Estadísticas",
       "settings": "Ajustes",
-      "billing": "Suscripción"
+      "billing": "Suscripción",
+      "menu": "Menú"
     },
     "overview": {
       "title": "Resumen",

@@ -30,7 +30,8 @@
     "login": "Autentificare",
     "signup": "Înregistrare",
     "dashboard": "Panou",
-    "logout": "Deconectare"
+    "logout": "Deconectare",
+    "menu": "Meniu"
   },
   "footer": {
     "madeWith": "Creat cu Vitrin",
@@ -194,7 +195,8 @@
       "inbox": "Mesaje primite",
       "stats": "Statistici",
       "settings": "Setări",
-      "billing": "Abonament"
+      "billing": "Abonament",
+      "menu": "Meniu"
     },
     "overview": {
       "title": "Prezentare generală",

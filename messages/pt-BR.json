@@ -30,7 +30,8 @@
     "login": "Entrar",
     "signup": "Criar conta",
     "dashboard": "Painel",
-    "logout": "Sair"
+    "logout": "Sair",
+    "menu": "Menu"
   },
   "footer": {
     "madeWith": "Feito com Vitrin",
@@ -194,7 +195,8 @@
       "inbox": "Caixa de entrada",
       "stats": "Estatísticas",
       "settings": "Configurações",
-      "billing": "Assinatura"
+      "billing": "Assinatura",
+      "menu": "Menu"
     },
     "overview": {
       "title": "Visão geral",

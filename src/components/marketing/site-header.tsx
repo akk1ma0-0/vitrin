@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 
 import { Logo } from "@/components/logo";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { MarketingMobileNav } from "@/components/marketing/mobile-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import type { Locale } from "@/i18n/locales";
@@ -40,6 +41,13 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         </nav>
 
         <div className="flex items-center gap-1">
+          <MarketingMobileNav
+            label={t("menu")}
+            links={[
+              { href: `/${locale}#how-it-works`, label: t("howItWorks") },
+              { href: `/${locale}/pricing`, label: t("pricing") },
+            ]}
+          />
           <LocaleSwitcher current={locale} />
           <ThemeToggle
             labels={{

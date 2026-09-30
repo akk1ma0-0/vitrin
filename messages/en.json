@@ -30,7 +30,8 @@
     "login": "Log in",
     "signup": "Sign up",
     "dashboard": "Dashboard",
-    "logout": "Log out"
+    "logout": "Log out",
+    "menu": "Menu"
   },
   "footer": {
     "madeWith": "Made with Vitrin",
@@ -194,7 +195,8 @@
       "inbox": "Inbox",
       "stats": "Stats",
       "settings": "Settings",
-      "billing": "Billing"
+      "billing": "Billing",
+      "menu": "Menu"
     },
     "overview": {
       "title": "Overview",

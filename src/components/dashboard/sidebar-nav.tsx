@@ -14,7 +14,7 @@ import {
 
 import { cn } from "@/lib/utils";
 
-const ITEMS = [
+export const NAV_ITEMS = [
   { href: "/dashboard", key: "overview", icon: LayoutGrid },
   { href: "/dashboard/works", key: "works", icon: LayoutGrid },
   { href: "/dashboard/profile", key: "profile", icon: User },
@@ -24,18 +24,19 @@ const ITEMS = [
   { href: "/dashboard/billing", key: "billing", icon: CreditCard },
 ] as const;
 
-export function SidebarNav() {
+export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const t = useTranslations("dashboard.nav");
   const pathname = usePathname();
 
   return (
     <nav className="flex flex-col gap-1 p-3">
-      {ITEMS.map((item) => {
+      {NAV_ITEMS.map((item) => {
         const active = item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href);
         return (
           <Link
             key={item.href}
             href={item.href}
+            onClick={onNavigate}
             className={cn(
               "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
               active ? "bg-surface text-foreground" : "text-muted-foreground hover:bg-surface hover:text-foreground",

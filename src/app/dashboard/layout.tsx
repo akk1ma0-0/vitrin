@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { headers } from "next/headers";
 
+import { MobileNav } from "@/components/dashboard/mobile-nav";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
@@ -43,14 +44,17 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="flex h-16 items-center justify-between border-b border-border px-4">
-          <Link
-            href={`/${profile.username}`}
-            target="_blank"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            vitrin.work/{profile.username}
-          </Link>
+        <header className="flex h-16 items-center justify-between gap-2 border-b border-border px-4">
+          <div className="flex min-w-0 items-center gap-1">
+            <MobileNav />
+            <Link
+              href={`/${profile.username}`}
+              target="_blank"
+              className="truncate text-sm text-muted-foreground hover:text-foreground"
+            >
+              vitrin.work/{profile.username}
+            </Link>
+          </div>
           <ThemeToggle
             labels={{ light: tTheme("themeLight"), dark: tTheme("themeDark"), system: tTheme("themeSystem") }}
           />

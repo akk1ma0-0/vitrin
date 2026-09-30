@@ -30,7 +30,8 @@
     "login": "Войти",
     "signup": "Регистрация",
     "dashboard": "Кабинет",
-    "logout": "Выйти"
+    "logout": "Выйти",
+    "menu": "Меню"
   },
   "footer": {
     "madeWith": "Сделано на Vitrin",
@@ -194,7 +195,8 @@
       "inbox": "Входящие",
       "stats": "Статистика",
       "settings": "Настройки",
-      "billing": "Подписка"
+      "billing": "Подписка",
+      "menu": "Меню"
     },
     "overview": {
       "title": "Обзор",

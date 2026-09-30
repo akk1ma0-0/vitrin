@@ -30,7 +30,8 @@
     "login": "Giriş yap",
     "signup": "Kaydol",
     "dashboard": "Panel",
-    "logout": "Çıkış yap"
+    "logout": "Çıkış yap",
+    "menu": "Menü"
   },
   "footer": {
     "madeWith": "Vitrin ile yapıldı",
@@ -194,7 +195,8 @@
       "inbox": "Gelen kutusu",
       "stats": "İstatistikler",
       "settings": "Ayarlar",
-      "billing": "Abonelik"
+      "billing": "Abonelik",
+      "menu": "Menü"
     },
     "overview": {
       "title": "Genel bakış",
