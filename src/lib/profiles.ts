@@ -26,6 +26,19 @@ export async function getPublicProfileByUsername(username: string): Promise<Publ
   }
 }
 
+/** Whether the currently signed-in user (if any) owns this profile — used to show the "edit my page" bar on the public view. */
+export async function isViewingOwnProfile(profileId: string): Promise<boolean> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user?.id === profileId;
+  } catch {
+    return false;
+  }
+}
+
 export async function getWorksForProfile(profileId: string): Promise<PublicWork[]> {
   try {
     const supabase = await createSupabaseServerClient();

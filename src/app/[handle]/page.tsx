@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { isLocale } from "@/i18n/locales";
 import { LandingPage } from "@/components/marketing/landing-page";
 import { PublicProfileView } from "@/components/portfolio/public-profile-view";
-import { getPublicProfileByUsername, getWorksForProfile } from "@/lib/profiles";
+import { getPublicProfileByUsername, getWorksForProfile, isViewingOwnProfile } from "@/lib/profiles";
 
 export async function generateMetadata({ params }: PageProps<"/[handle]">): Promise<Metadata> {
   const { handle } = await params;
@@ -38,7 +38,10 @@ export default async function HandlePage({ params }: PageProps<"/[handle]">) {
   const profile = await getPublicProfileByUsername(handle);
   if (!profile) notFound();
 
-  const works = await getWorksForProfile(profile.id);
+  const [works, isOwner] = await Promise.all([
+    getWorksForProfile(profile.id),
+    isViewingOwnProfile(profile.id),
+  ]);
   const tSpec = await getTranslations("specializations");
   const specializationLabel =
     profile.specialization && tSpec.has(profile.specialization)
@@ -65,6 +68,7 @@ export default async function HandlePage({ params }: PageProps<"/[handle]">) {
         works={works}
         specializationLabel={specializationLabel}
         initialOpenWorkId={null}
+        isOwner={isOwner}
       />
     </>
   );

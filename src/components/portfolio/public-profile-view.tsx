@@ -18,13 +18,16 @@ export function PublicProfileView({
   works,
   specializationLabel,
   initialOpenWorkId,
+  isOwner,
 }: {
   profile: PublicProfile;
   works: PublicWork[];
   specializationLabel: string | null;
   initialOpenWorkId: string | null;
+  isOwner: boolean;
 }) {
   const t = useTranslations("footer");
+  const tProfile = useTranslations("profile");
   const router = useRouter();
   const [openWorkId, setOpenWorkId] = useState<string | null>(initialOpenWorkId);
   const [hireForWork, setHireForWork] = useState<PublicWork | undefined>(undefined);
@@ -59,6 +62,17 @@ export function PublicProfileView({
 
   return (
     <div className="flex min-h-screen flex-col">
+      {isOwner && (
+        <div className="flex items-center justify-between gap-2 border-b border-border bg-surface px-4 py-2 text-sm">
+          <span className="truncate text-muted-foreground">{tProfile("ownerBar")}</span>
+          <Link
+            href="/dashboard"
+            className="shrink-0 rounded-lg bg-foreground px-3 py-1.5 text-xs font-medium text-background hover:opacity-90"
+          >
+            {tProfile("goToDashboard")}
+          </Link>
+        </div>
+      )}
       <div className="flex-1">
         <ProfileHeader
           profile={profile}

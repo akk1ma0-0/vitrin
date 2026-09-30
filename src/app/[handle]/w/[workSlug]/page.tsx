@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 
 import { isLocale } from "@/i18n/locales";
 import { PublicProfileView } from "@/components/portfolio/public-profile-view";
-import { getPublicProfileByUsername, getWorksForProfile } from "@/lib/profiles";
+import { getPublicProfileByUsername, getWorksForProfile, isViewingOwnProfile } from "@/lib/profiles";
 
 export default async function WorkDeepLinkPage({
   params,
@@ -16,7 +16,10 @@ export default async function WorkDeepLinkPage({
   const profile = await getPublicProfileByUsername(handle);
   if (!profile) notFound();
 
-  const works = await getWorksForProfile(profile.id);
+  const [works, isOwner] = await Promise.all([
+    getWorksForProfile(profile.id),
+    isViewingOwnProfile(profile.id),
+  ]);
   const work = works.find((w) => w.slug === workSlug);
   if (!work) notFound();
 
@@ -32,6 +35,7 @@ export default async function WorkDeepLinkPage({
       works={works}
       specializationLabel={specializationLabel}
       initialOpenWorkId={work.id}
+      isOwner={isOwner}
     />
   );
 }

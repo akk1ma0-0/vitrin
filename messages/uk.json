@@ -143,7 +143,9 @@
     "live": "Live",
     "preview": "Preview",
     "expand": "Розгорнути",
-    "visitSite": "Перейти"
+    "visitSite": "Перейти",
+    "ownerBar": "Ви переглядаєте свою публічну сторінку",
+    "goToDashboard": "До кабінету"
   },
   "viewer": {
     "openOriginal": "Відкрити оригінал",

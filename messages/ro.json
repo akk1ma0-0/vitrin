@@ -143,7 +143,9 @@
     "live": "Live",
     "preview": "Preview",
     "expand": "Extinde",
-    "visitSite": "Vizitează"
+    "visitSite": "Vizitează",
+    "ownerBar": "Vizualizezi pagina ta publică",
+    "goToDashboard": "Mergi la panou"
   },
   "viewer": {
     "openOriginal": "Deschide originalul",

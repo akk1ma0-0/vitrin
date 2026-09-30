@@ -143,7 +143,9 @@
     "live": "Live",
     "preview": "Preview",
     "expand": "Genişlet",
-    "visitSite": "Ziyaret et"
+    "visitSite": "Ziyaret et",
+    "ownerBar": "Herkese açık sayfanı görüntülüyorsun",
+    "goToDashboard": "Panele git"
   },
   "viewer": {
     "openOriginal": "Orijinali aç",

@@ -143,7 +143,9 @@
     "live": "Live",
     "preview": "Preview",
     "expand": "Развернуть",
-    "visitSite": "Перейти"
+    "visitSite": "Перейти",
+    "ownerBar": "Вы просматриваете свою публичную страницу",
+    "goToDashboard": "В личный кабинет"
   },
   "viewer": {
     "openOriginal": "Открыть оригинал",

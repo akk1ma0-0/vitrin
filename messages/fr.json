@@ -143,7 +143,9 @@
     "live": "Live",
     "preview": "Preview",
     "expand": "Agrandir",
-    "visitSite": "Visiter"
+    "visitSite": "Visiter",
+    "ownerBar": "Vous consultez votre page publique",
+    "goToDashboard": "Aller au tableau de bord"
   },
   "viewer": {
     "openOriginal": "Ouvrir l'original",
