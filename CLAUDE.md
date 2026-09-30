@@ -99,6 +99,14 @@ which no-ops until `UPSTASH_REDIS_REST_URL` is set).
 - **Content moderation:** OpenAI Moderation API (`omni-moderation-latest`).
 - **Background jobs:** a `jobs` table processed by `/api/cron/process-jobs`
   (Vercel Cron, `claim_jobs()` Postgres function using `FOR UPDATE SKIP LOCKED`).
+  `vercel.json`'s cron is daily (`0 0 * * *`), not per-minute as spec section 9
+  asks for, because Vercel's Hobby (free) plan rejects any cron schedule that
+  would fire more than once a day — deploys fail outright otherwise. This is
+  a soft degradation, not a broken feature: `/api/works` already fires the
+  processor immediately after creating a work (fire-and-forget), so new
+  links still ingest right away; the cron is only the retry/catch-up safety
+  net for jobs that failed and are backing off. Tighten this back to
+  per-minute once the project is on a paid Vercel plan.
 - **Tests:** Vitest for unit tests (business logic in `src/lib/**` is the
   priority — it's pure and cheap to test), Playwright for e2e later.
 - **Lint/format:** ESLint (flat config) + Prettier + `prettier-plugin-tailwindcss`.
