@@ -74,3 +74,24 @@ create policy "owners manage their own works"
   on public.works for all
   using (profile_id = auth.uid() or public.is_admin())
   with check (profile_id = auth.uid() or public.is_admin());
+
+-- catalog_visible is computed on read (needs a >=3 "ready" works count that
+-- can't live in a generated column), see spec section 8.2; exposed here as
+-- a convenience view for the catalog. Lives here (not in 0002_profiles.sql)
+-- because views are validated against real tables at creation time, and
+-- this one depends on `works`, created just above.
+create view public.catalog_profiles as
+select p.*
+from public.profiles p
+where p.status = 'active'
+  and p.email_verified = true
+  and p.avatar_url is not null
+  and p.headline is not null
+  and (
+    select count(*) from public.works w
+    where w.profile_id = p.id
+      and w.is_hidden = false
+      and w.safety_status = 'safe'
+      and w.moderation_status <> 'rejected'
+      and w.ingest_status = 'ready'
+  ) >= 3;

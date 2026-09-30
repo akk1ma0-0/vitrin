@@ -48,24 +48,25 @@ create trigger profiles_set_updated_at
   before update on public.profiles
   for each row execute function public.set_updated_at();
 
--- catalog_visible is computed on read (needs a >=3 "ready" works count that
--- can't live in a generated column), see src/lib/catalog.ts for the rule
--- from spec section 8.2; exposed here as a convenience view for the catalog.
-create view public.catalog_profiles as
-select p.*
-from public.profiles p
-where p.status = 'active'
-  and p.email_verified = true
-  and p.avatar_url is not null
-  and p.headline is not null
-  and (
-    select count(*) from public.works w
-    where w.profile_id = p.id
-      and w.is_hidden = false
-      and w.safety_status = 'safe'
-      and w.moderation_status <> 'rejected'
-      and w.ingest_status = 'ready'
-  ) >= 3;
+-- Returns true when the current JWT belongs to an admin. Used inside RLS
+-- policies instead of duplicating the profiles lookup everywhere. Defined
+-- here (not in 0001) because `language sql` functions are validated against
+-- real tables at CREATE FUNCTION time, and `profiles` has to exist first.
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role = 'admin'
+  );
+$$;
+
+-- The `catalog_profiles` view (spec section 8.2) lives in 0003_works.sql,
+-- right after the `works` table it also depends on is created.
 
 alter table public.profiles enable row level security;
 

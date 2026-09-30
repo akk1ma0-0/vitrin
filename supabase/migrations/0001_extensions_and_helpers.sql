@@ -14,17 +14,7 @@ begin
 end;
 $$;
 
--- Returns true when the current JWT belongs to an admin. Used inside RLS
--- policies instead of duplicating the profiles lookup everywhere.
-create or replace function public.is_admin()
-returns boolean
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select exists (
-    select 1 from public.profiles
-    where id = auth.uid() and role = 'admin'
-  );
-$$;
+-- is_admin() lives in 0002_profiles.sql, right after the profiles table is
+-- created: it's a `language sql` function, which Postgres validates against
+-- real tables at CREATE FUNCTION time (unlike plpgsql), so it can't be
+-- defined here before `profiles` exists.
