@@ -11,8 +11,11 @@ export async function generateMetadata({ params }: PageProps<"/[handle]">): Prom
   const { handle } = await params;
 
   if (isLocale(handle)) {
+    // No explicit title here: the root layout's default ("Vitrin") already
+    // applies. Setting one here would run it through the "%s | Vitrin"
+    // template too, producing "Vitrin | Vitrin".
     const t = await getTranslations({ locale: handle, namespace: "landing" });
-    return { title: "Vitrin", description: t("heroSubtitle") };
+    return { description: t("heroSubtitle") };
   }
 
   const profile = await getPublicProfileByUsername(handle);
