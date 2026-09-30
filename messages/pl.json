@@ -146,6 +146,7 @@
   },
   "viewer": {
     "openOriginal": "Otwórz oryginał",
+    "staticPreviewNote": "Statyczny podgląd — kliknij, aby otworzyć stronę na żywo",
     "device": {
       "desktop": "Komputer",
       "tablet": "Tablet",

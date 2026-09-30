@@ -66,8 +66,14 @@ export function WorkViewer({
       );
     }
     if (work.render_mode === "screenshot" || forceScreenshot) {
+      const meta = work.meta as { screenshots?: Partial<Record<DeviceKey, string>> } | null;
       return work.screenshot_url ? (
-        <ScreenshotScroller url={work.screenshot_url} device={device} />
+        <ScreenshotScroller
+          url={work.screenshot_url}
+          device={device}
+          screenshots={meta?.screenshots}
+          sourceUrl={work.source_url}
+        />
       ) : null;
     }
     if (work.render_mode === "video" || work.render_mode === "embed") {

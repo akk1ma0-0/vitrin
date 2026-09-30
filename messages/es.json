@@ -146,6 +146,7 @@
   },
   "viewer": {
     "openOriginal": "Abrir original",
+    "staticPreviewNote": "Vista previa estática: haz clic para abrir el sitio en vivo",
     "device": {
       "desktop": "Escritorio",
       "tablet": "Tablet",

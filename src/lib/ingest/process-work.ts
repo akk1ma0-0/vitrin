@@ -4,6 +4,7 @@ import {
   detectSource,
   type RenderMode,
 } from "@/lib/ingest/detect-source";
+import { DEVICE_WIDTHS } from "@/lib/device-widths";
 import { isIframeAllowed } from "@/lib/ingest/iframe-check";
 import { normalizeUrl } from "@/lib/ingest/normalize-url";
 import { safeIngestFetch } from "@/lib/ingest/ssrf-guard";
@@ -14,7 +15,6 @@ import { checkUrlSafety } from "@/lib/services/web-risk";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/supabase/database.types";
 
-const FULL_PAGE_WIDTH = 1440;
 const FULL_PAGE_MAX_HEIGHT = 15_000;
 
 function buildFigmaEmbedUrl(url: string): string {
@@ -115,20 +115,26 @@ export async function processWork(workId: string): Promise<void> {
     if (iframeAllowed) embedUrl = normalizedUrl;
   }
 
-  // Metadata + cover, best-effort for every source type that doesn't already have one.
+  // Metadata (title/description) best-effort for every source type missing them.
   if (!title || !description || !coverUrl) {
     const pageMeta = await screenshotProvider.getMetadata(normalizedUrl);
     if (pageMeta) {
       title = title ?? pageMeta.title ?? null;
       description = description ?? pageMeta.description ?? null;
-      if (!coverUrl && pageMeta.imageUrl) {
+      // Only trust the scraped og:image as the cover when we won't capture our
+      // own homepage screenshot below. A site's og:image can be an unrelated
+      // asset (a payment-provider logo, a generic social card, ...) — for
+      // anything rendering in screenshot mode, our own capture of the actual
+      // page is a more faithful thumbnail, and matches what "expand" shows.
+      if (!coverUrl && pageMeta.imageUrl && renderMode !== "screenshot") {
         coverUrl = pageMeta.imageUrl;
         coverSource = "og";
       }
     }
   }
 
-  // Screenshots: always try a cover for card display; full-page only when we'll render in screenshot mode.
+  // Cover for card display: our own screenshot when we don't already have a
+  // trustworthy one (see above).
   if (!coverUrl || coverSource === "screenshot") {
     const cover = await screenshotProvider.captureCover(normalizedUrl);
     if (cover) {
@@ -141,9 +147,28 @@ export async function processWork(workId: string): Promise<void> {
   }
 
   if (renderMode === "screenshot") {
-    const fullPage = await screenshotProvider.captureFullPage(normalizedUrl, FULL_PAGE_WIDTH, FULL_PAGE_MAX_HEIGHT);
-    if (fullPage) {
-      screenshotUrl = await uploadScreenshot(supabase, work.profile_id, workId, "full", fullPage.buffer, fullPage.contentType);
+    // The real site can't be embedded live (blocked framing), so the viewer
+    // shows a static capture instead. Capture one per device width so the
+    // device switcher actually reflects the site's real responsive layout
+    // instead of just resizing a single desktop-width image.
+    const devices = Object.entries(DEVICE_WIDTHS) as [keyof typeof DEVICE_WIDTHS, number][];
+    const captures = await Promise.all(
+      devices.map(([, width]) => screenshotProvider.captureFullPage(normalizedUrl, width, FULL_PAGE_MAX_HEIGHT)),
+    );
+
+    const screenshots: Record<string, string> = {};
+    for (let i = 0; i < devices.length; i++) {
+      const [device] = devices[i];
+      const capture = captures[i];
+      if (!capture) continue;
+      const uploaded = await uploadScreenshot(supabase, work.profile_id, workId, `full-${device}`, capture.buffer, capture.contentType);
+      if (uploaded) screenshots[device] = uploaded;
+    }
+
+    screenshotUrl = screenshots.desktop ?? null;
+    if (Object.keys(screenshots).length > 0) {
+      const baseMeta = typeof meta === "object" && meta !== null && !Array.isArray(meta) ? meta : {};
+      meta = { ...baseMeta, screenshots };
     }
   }
 

@@ -146,6 +146,7 @@
   },
   "viewer": {
     "openOriginal": "Original öffnen",
+    "staticPreviewNote": "Statische Vorschau – klicken, um die Live-Website zu öffnen",
     "device": {
       "desktop": "Desktop",
       "tablet": "Tablet",

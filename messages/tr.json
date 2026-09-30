@@ -146,6 +146,7 @@
   },
   "viewer": {
     "openOriginal": "Orijinali aç",
+    "staticPreviewNote": "Statik önizleme — canlı siteyi açmak için tıklayın",
     "device": {
       "desktop": "Masaüstü",
       "tablet": "Tablet",

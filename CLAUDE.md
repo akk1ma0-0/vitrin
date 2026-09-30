@@ -41,7 +41,16 @@ Built:
   detection → per-type metadata/embed (Figma, GitHub+README, YouTube/
   Vimeo/Loom, Google Docs/Slides, website iframe-vs-screenshot via
   Microlink) → OpenAI moderation gate → `jobs` queue processed by
-  `/api/cron/process-jobs` with retry backoff.
+  `/api/cron/process-jobs` with retry backoff. When a site can't be
+  iframed (`render_mode = "screenshot"`), one capture is taken per
+  `DEVICE_WIDTHS` entry (`src/lib/device-widths.ts`, the shared source of
+  truth also used by `DeviceSwitcher`) and stored as `meta.screenshots`,
+  so the viewer's device switcher shows the site's real responsive layout
+  instead of resizing one fixed-width image. The card/og:image cover is
+  only trusted for non-screenshot render modes — for screenshot mode it's
+  always our own homepage capture, since a page's `og:image` can be an
+  unrelated asset (a payment logo, a generic share card) that makes a
+  worse thumbnail than the real page.
 - Public profile page, work viewer with adapters per render mode (live
   iframe with device-width scaling, screenshot scroller, video/generic
   embed, GitHub card, image gallery, PDF), hire form (rate-limited,

@@ -3,15 +3,10 @@
 import { Laptop, Smartphone, Tablet } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { DEVICE_WIDTHS, type DeviceKey } from "@/lib/device-widths";
 import { cn } from "@/lib/utils";
 
-export type DeviceKey = "desktop" | "tablet" | "mobile";
-
-export const DEVICE_WIDTHS: Record<DeviceKey, number> = {
-  desktop: 1440,
-  tablet: 768,
-  mobile: 390,
-};
+export { DEVICE_WIDTHS, type DeviceKey };
 
 const DEVICE_ICONS: Record<DeviceKey, typeof Laptop> = {
   desktop: Laptop,

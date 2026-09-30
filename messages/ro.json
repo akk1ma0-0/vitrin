@@ -146,6 +146,7 @@
   },
   "viewer": {
     "openOriginal": "Deschide originalul",
+    "staticPreviewNote": "Previzualizare statică — apasă pentru a deschide site-ul live",
     "device": {
       "desktop": "Desktop",
       "tablet": "Tabletă",
