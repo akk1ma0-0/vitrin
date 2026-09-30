@@ -102,7 +102,7 @@ export function OnboardingWizard({ initialEmail }: { initialEmail: string }) {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        toast.error(data.error ?? "Something went wrong");
+        toast.error(data.detail ?? data.error ?? "Something went wrong");
         return;
       }
       setStep("links");
