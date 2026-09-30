@@ -24,7 +24,9 @@ alter table public.jobs enable row level security;
 
 -- Claims up to `p_limit` due jobs atomically, skipping rows another worker
 -- already has locked, so concurrent cron invocations never double-process
--- the same job (spec section 9).
+-- the same job (spec section 9). Only service_role may ever call this
+-- (grant lives in 0012_grants.sql) — it must never be reachable by a
+-- visitor or signed-in user via /rest/v1/rpc/claim_jobs.
 create or replace function public.claim_jobs(p_limit integer)
 returns setof public.jobs
 language sql

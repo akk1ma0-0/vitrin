@@ -80,7 +80,14 @@ create policy "owners manage their own works"
 -- a convenience view for the catalog. Lives here (not in 0002_profiles.sql)
 -- because views are validated against real tables at creation time, and
 -- this one depends on `works`, created just above.
-create view public.catalog_profiles as
+--
+-- `security_invoker = true` is required: without it, Postgres evaluates
+-- the view (and the RLS on profiles/works underneath it) as the view's
+-- *owner*, not the querying user — silently bypassing RLS entirely for
+-- anyone who queries this view (Supabase's "Security Definer View" advisory).
+create view public.catalog_profiles
+with (security_invoker = true)
+as
 select p.*
 from public.profiles p
 where p.status = 'active'

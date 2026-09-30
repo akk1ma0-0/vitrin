@@ -6,7 +6,7 @@ create type public.profile_status as enum ('active', 'hidden', 'banned');
 
 create table public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
-  username citext unique,
+  username extensions.citext unique,
   display_name text,
   headline text check (char_length(headline) <= 80),
   bio text check (char_length(bio) <= 600),
@@ -64,6 +64,9 @@ as $$
     where id = auth.uid() and role = 'admin'
   );
 $$;
+
+-- Function-execute grants (including this one) are centralized in
+-- 0012_grants.sql, applied after every function in this schema exists.
 
 -- The `catalog_profiles` view (spec section 8.2) lives in 0003_works.sql,
 -- right after the `works` table it also depends on is created.

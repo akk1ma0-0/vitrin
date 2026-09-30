@@ -172,6 +172,18 @@ every request (the standard `@supabase/ssr` middleware pattern).
 - RLS is the last line of defense, not the only one: privileged columns
   (`profiles.plan/role/status`) are also protected by a Postgres trigger
   (see `0002_profiles.sql`) so an application bug can't leak past a policy.
+- Function EXECUTE grants are deny-by-default (`0012_grants.sql` revokes
+  the PUBLIC pseudo-role's auto-granted EXECUTE on every function in
+  `public`, then grants back only `service_role` plus the one function
+  anon/authenticated actually need, `is_admin()`). Postgres auto-grants
+  EXECUTE to PUBLIC on every new function, which anon/authenticated
+  inherit as members of PUBLIC — so a new `security definer` helper is
+  reachable at `/rest/v1/rpc/<name>` by anyone unless you explicitly revoke
+  it. Any new function needs a deliberate grant decision, not silence.
+- Any view over an RLS-protected table needs `with (security_invoker =
+  true)` (see `catalog_profiles` in `0003_works.sql`) — without it,
+  Postgres evaluates the view as its owner, silently bypassing the
+  underlying tables' RLS for whoever queries the view.
 - Ingest network calls **must** go through `src/lib/ingest/ssrf-guard.ts`'s
   `safeIngestFetch` / `safeIngestFetchFollowingRedirects` — never call
   `fetch()` directly on a user-submitted URL.
