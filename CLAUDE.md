@@ -173,14 +173,16 @@ every request (the standard `@supabase/ssr` middleware pattern).
 ## What the owner still needs to provide
 
 Nothing in this repo can go live without accounts only the owner can
-create — see spec section 16. In particular, **no Supabase project is
-connected yet**, so nothing here has been run against a live database;
-migrations are written and ready to apply with `supabase db push` (or
-pasted into the SQL editor) the moment a project exists. Also needed:
-Vercel project, Google Cloud OAuth + Web Risk credentials, OpenAI API key,
-Resend + verified sending domain, Cloudflare Turnstile keys, Upstash
-Redis, Microlink API key, Paddle sandbox → live account, and the domain
-`vitrin.work` itself with DNS access.
+create — see spec section 16. Optional services (OpenAI moderation, Resend
+email, Turnstile captcha, Upstash rate limiting, Microlink) degrade
+gracefully when unconfigured — every call site checks for its env var and
+no-ops instead of failing, so the app runs fine without them; only
+Supabase (DB/Auth/Storage) and a Google OAuth client are actually required
+to get sign-up through to a working portfolio page. Deploy target is
+Vercel, project connected to this repo's default branch
+(`claude/wizardly-thompson-5t1u1c`). Also needed eventually: Paddle
+sandbox → live account (stage 2) and the domain `vitrin.work` with DNS
+access — a Vercel-assigned subdomain is fine for testing.
 
 ## Commands
 
