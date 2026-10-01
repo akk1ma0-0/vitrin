@@ -35,6 +35,9 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           <Link href={`/${locale}#how-it-works`} className="text-muted-foreground hover:text-foreground">
             {t("howItWorks")}
           </Link>
+          <Link href={`/${locale}/catalog`} className="text-muted-foreground hover:text-foreground">
+            {t("catalog")}
+          </Link>
           <Link href={`/${locale}/pricing`} className="text-muted-foreground hover:text-foreground">
             {t("pricing")}
           </Link>
@@ -45,6 +48,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             label={t("menu")}
             links={[
               { href: `/${locale}#how-it-works`, label: t("howItWorks") },
+              { href: `/${locale}/catalog`, label: t("catalog") },
               { href: `/${locale}/pricing`, label: t("pricing") },
             ]}
           />

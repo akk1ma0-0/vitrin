@@ -63,18 +63,28 @@ Built:
 - Admin moderation queue (flagged works + open reports, with
   approve/hide/delete/ban actions logged to `moderation_log`).
 - SEO: sitemap.xml, robots.txt, dynamic OG images, JSON-LD on profiles.
+- Catalog (`[handle]/catalog/page.tsx`, built ahead of its stage-2 slot):
+  search (plain ILIKE on username/display_name/headline, not yet the
+  spec's full-text + pg_trgm), filters (specialization, open-to-work),
+  sort (relevance = Pro-first then newest, or newest), pagination, cards
+  with up to 3 work covers (`getCatalogCovers()` in `src/lib/profiles.ts`).
+  Reads straight off the existing `catalog_profiles` view, so the spec
+  8.2 visibility gate (active, verified, avatar + headline set, >=3 ready
+  works) already applies — a profile with fewer than 3 works simply won't
+  show up yet, that's not a bug. Cards open with `target="_blank"` so
+  browsing the directory doesn't lose the filtered list. Rate display is
+  wired up but will stay empty for every profile today — there's no
+  profile-editor UI yet for `rate_min`/`rate_max`/`rate_unit`. Not yet
+  built: Postgres full-text/trigram search, "popular" sort (needs a
+  30-day view aggregate across profiles, more than a plain `.order()`
+  can do), per-specialization SEO pages (`/catalog/{specialization}`).
 
 Deliberately deferred to stage 2 per the spec's own plan: Paddle billing,
-the searchable catalog, Facebook/Telegram login, notion/telegram_post/
-behance/dribbble/upload_video/upload_pdf adapters, link-recheck and
-screenshot-refresh cron jobs, Upstash-backed rate limiting on every public
-endpoint (the hire/report routes already call the same rate-limit helper,
-which no-ops until `UPSTASH_REDIS_REST_URL` is set).
-`[handle]/catalog/page.tsx` is currently a "coming soon" stub. When it's
-built: profile cards should link with `target="_blank"` — a visitor
-browsing a directory of freelancers shouldn't lose their filtered list
-just to look at one profile (the public profile page itself has no
-"back to catalog" nav by design, see below).
+Facebook/Telegram login, notion/telegram_post/behance/dribbble/
+upload_video/upload_pdf adapters, link-recheck and screenshot-refresh
+cron jobs, Upstash-backed rate limiting on every public endpoint (the
+hire/report routes already call the same rate-limit helper, which
+no-ops until `UPSTASH_REDIS_REST_URL` is set).
 
 ## Stack
 
@@ -223,6 +233,18 @@ every request (the standard `@supabase/ssr` middleware pattern).
   state.
 - Commit after each meaningful unit of work (this mirrors spec section 14's
   "commit after every point, run tests after every stage").
+- There is no self-service way to grant `profiles.role = 'admin'`, and that
+  is deliberate: `protect_privileged_profile_columns()` (`0002_profiles.sql`)
+  reverts any change to `role` unless `auth.role() = 'service_role'`, which
+  only a direct service-role connection satisfies — not even a Postgres
+  superuser session reaching the table through a normal connection, since
+  that trigger check reads the PostgREST JWT claim, not the DB role. To
+  promote someone: run `update profiles set role = 'admin' where id = ...`
+  with the trigger disabled for that one statement (`alter table profiles
+  disable/enable trigger profiles_protect_privileged_columns`), or via any
+  other genuinely service-role connection. `/admin` itself just checks
+  `role = 'admin'` in `admin/layout.tsx` and redirects to `/dashboard`
+  otherwise — there's no link to it anywhere in the UI by design.
 
 ## What the owner still needs to provide
 

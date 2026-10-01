@@ -66,6 +66,25 @@
     "ctaBody": "Boş bir profilden paylaşıma hazır bir sayfaya yaklaşık iki dakika.",
     "ctaButton": "Ücretsiz başla"
   },
+  "catalog": {
+    "title": "Freelancerlar",
+    "subtitle": "Vitrin ile oluşturulan portföyler",
+    "searchPlaceholder": "İsim veya başlığa göre ara",
+    "allSpecializations": "Tüm uzmanlıklar",
+    "availableOnly": "Sadece müsait olanlar",
+    "sortRelevance": "İlgi düzeyi",
+    "sortNewest": "En yeniler",
+    "empty": "Henüz eşleşen yok",
+    "resultsCount": "{count} freelancer",
+    "openToWork": "Çalışmaya açık",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "page": "Sayfa {page} / {total}",
+    "rateUnit": {
+      "hour": "/sa",
+      "project": "/proje"
+    }
+  },
   "pricing": {
     "title": "Basit fiyatlandırma",
     "subtitle": "Ücretsiz başla. İşin için daha fazla alana ihtiyacın olduğunda yükselt.",

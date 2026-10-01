@@ -66,6 +66,25 @@
     "ctaBody": "Von einem leeren Profil bis zur teilbaren Seite dauert es etwa zwei Minuten.",
     "ctaButton": "Kostenlos starten"
   },
+  "catalog": {
+    "title": "Freelancer",
+    "subtitle": "Portfolios, erstellt mit Vitrin",
+    "searchPlaceholder": "Suche nach Name oder Headline",
+    "allSpecializations": "Alle Spezialisierungen",
+    "availableOnly": "Nur verfügbare",
+    "sortRelevance": "Relevanz",
+    "sortNewest": "Neueste",
+    "empty": "Noch keine Treffer",
+    "resultsCount": "{count} Freelancer",
+    "openToWork": "Verfügbar",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "page": "Seite {page} von {total}",
+    "rateUnit": {
+      "hour": "/Std",
+      "project": "/Projekt"
+    }
+  },
   "pricing": {
     "title": "Einfache Preise",
     "subtitle": "Starte kostenlos. Upgrade, wenn du mehr Platz für deine Arbeit brauchst.",

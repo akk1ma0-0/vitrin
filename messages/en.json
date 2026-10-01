@@ -66,6 +66,25 @@
     "ctaBody": "It takes about two minutes to go from a blank profile to a shareable page.",
     "ctaButton": "Get started for free"
   },
+  "catalog": {
+    "title": "Freelancers",
+    "subtitle": "Browse portfolios built with Vitrin",
+    "searchPlaceholder": "Search by name or headline",
+    "allSpecializations": "All specializations",
+    "availableOnly": "Open to work only",
+    "sortRelevance": "Relevance",
+    "sortNewest": "Newest",
+    "empty": "No freelancers match yet",
+    "resultsCount": "{count} freelancers",
+    "openToWork": "Open to work",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page} of {total}",
+    "rateUnit": {
+      "hour": "/hr",
+      "project": "/project"
+    }
+  },
   "pricing": {
     "title": "Simple pricing",
     "subtitle": "Start free. Upgrade when you need more room to show your work.",

@@ -66,6 +66,25 @@
     "ctaBody": "De la un profil gol la o pagină gata de distribuit în aproximativ două minute.",
     "ctaButton": "Începe gratuit"
   },
+  "catalog": {
+    "title": "Freelanceri",
+    "subtitle": "Portofolii create cu Vitrin",
+    "searchPlaceholder": "Caută după nume sau headline",
+    "allSpecializations": "Toate specializările",
+    "availableOnly": "Doar disponibili",
+    "sortRelevance": "Relevanță",
+    "sortNewest": "Cele mai noi",
+    "empty": "Niciun rezultat încă",
+    "resultsCount": "{count} freelanceri",
+    "openToWork": "Disponibil",
+    "previous": "Înapoi",
+    "next": "Înainte",
+    "page": "Pagina {page} din {total}",
+    "rateUnit": {
+      "hour": "/oră",
+      "project": "/proiect"
+    }
+  },
   "pricing": {
     "title": "Prețuri simple",
     "subtitle": "Începe gratuit. Fă upgrade când ai nevoie de mai mult spațiu pentru munca ta.",

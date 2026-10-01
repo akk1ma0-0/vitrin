@@ -66,6 +66,25 @@
     "ctaBody": "D'un profil vide à une page prête à partager en environ deux minutes.",
     "ctaButton": "Commencer gratuitement"
   },
+  "catalog": {
+    "title": "Freelances",
+    "subtitle": "Portfolios créés avec Vitrin",
+    "searchPlaceholder": "Rechercher par nom ou titre",
+    "allSpecializations": "Toutes les spécialisations",
+    "availableOnly": "Disponibles uniquement",
+    "sortRelevance": "Pertinence",
+    "sortNewest": "Plus récents",
+    "empty": "Aucun résultat pour l'instant",
+    "resultsCount": "{count} freelances",
+    "openToWork": "Disponible",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page {page} sur {total}",
+    "rateUnit": {
+      "hour": "/h",
+      "project": "/projet"
+    }
+  },
   "pricing": {
     "title": "Des tarifs simples",
     "subtitle": "Commencez gratuitement. Passez à l'offre supérieure quand vous avez besoin de plus d'espace.",
