@@ -70,6 +70,11 @@ behance/dribbble/upload_video/upload_pdf adapters, link-recheck and
 screenshot-refresh cron jobs, Upstash-backed rate limiting on every public
 endpoint (the hire/report routes already call the same rate-limit helper,
 which no-ops until `UPSTASH_REDIS_REST_URL` is set).
+`[handle]/catalog/page.tsx` is currently a "coming soon" stub. When it's
+built: profile cards should link with `target="_blank"` — a visitor
+browsing a directory of freelancers shouldn't lose their filtered list
+just to look at one profile (the public profile page itself has no
+"back to catalog" nav by design, see below).
 
 ## Stack
 
@@ -196,6 +201,17 @@ every request (the standard `@supabase/ssr` middleware pattern).
 - Ingest network calls **must** go through `src/lib/ingest/ssrf-guard.ts`'s
   `safeIngestFetch` / `safeIngestFetchFollowingRedirects` — never call
   `fetch()` directly on a user-submitted URL.
+- The public profile page (`PublicProfileView`) is deliberately chrome-free
+  for visitors — no pricing/catalog nav, so it reads as the freelancer's own
+  site rather than an app screen (spec section 5.4). Its only way back to
+  Vitrin is the "Made with Vitrin" footer link, which the spec requires
+  removed entirely on Pro plans (section 8's branding row) — don't add a
+  second always-visible Vitrin link/badge elsewhere on the page, that would
+  defeat the Pro no-branding feature. The one exception is `isOwner`
+  (`isViewingOwnProfile()` in `src/lib/profiles.ts`): when the signed-in
+  viewer owns the profile, a "go to dashboard" bar is shown regardless of
+  plan, since that's the owner managing their own page, not platform
+  branding on a visitor's view.
 - Commit after each meaningful unit of work (this mirrors spec section 14's
   "commit after every point, run tests after every stage").
 
