@@ -74,6 +74,7 @@
     "availableOnly": "Nur verfügbare",
     "sortRelevance": "Relevanz",
     "sortNewest": "Neueste",
+    "sortPopular": "Beliebt",
     "empty": "Noch keine Treffer",
     "resultsCount": "{count} Freelancer",
     "openToWork": "Verfügbar",
@@ -254,7 +255,15 @@
       "title": "Profil",
       "livePreview": "Live-Vorschau",
       "changeUsername": "Benutzernamen ändern",
-      "usernameCooldown": "Du kannst deinen Benutzernamen in {days} Tagen erneut ändern"
+      "usernameCooldown": "Du kannst deinen Benutzernamen in {days} Tagen erneut ändern",
+      "rateTitle": "Satz",
+      "rateMinLabel": "Min",
+      "rateMaxLabel": "Max",
+      "rateCurrencyLabel": "Währung",
+      "rateUnitLabel": "Abrechnung",
+      "rateUnitHour": "Pro Stunde",
+      "rateUnitProject": "Pro Projekt",
+      "rateUnitNone": "Nicht angegeben"
     },
     "inbox": {
       "title": "Posteingang",

@@ -61,7 +61,7 @@ export interface CatalogQuery {
   q?: string;
   specialization?: string;
   availableOnly?: boolean;
-  sort?: "relevance" | "newest";
+  sort?: "relevance" | "newest" | "popular";
   page?: number;
 }
 
@@ -76,31 +76,47 @@ export interface CatalogResult {
  * The `catalog_profiles` view (0003_works.sql) already applies the spec
  * 8.2 visibility gate (active, email verified, avatar + headline set, >=3
  * ready works) — this just adds search/filter/sort/pagination on top of it.
- * Text search is plain ILIKE on username/display_name/headline, not the
- * full-text + pg_trgm search the spec describes for stage 2; good enough
- * for a usable v1 without a dedicated search index migration.
+ *
+ * Search (0013_catalog_search.sql) goes through the `search_catalog_profiles`
+ * RPC — full-text ranking plus trigram similarity for typos — rather than
+ * PostgREST filters, since composing that much query logic (ranked search +
+ * filters + sort) through the filter DSL isn't practical. The RPC returns
+ * its full matching set unpaginated; pagination/counting happens here in
+ * JS, which is fine at the row counts a freelancer directory actually has.
  */
 export async function getCatalogProfiles(query: CatalogQuery): Promise<CatalogResult> {
   const page = Math.max(1, query.page ?? 1);
   const pageSize = CATALOG_PAGE_SIZE;
+  const q = query.q?.trim();
 
   try {
     const supabase = await createSupabaseServerClient();
-    let builder = supabase.from("catalog_profiles").select("*", { count: "exact" });
 
-    const q = query.q?.trim();
     if (q) {
-      // Strip characters that have special meaning inside a PostgREST `.or()`
-      // filter string (`,()%`) so user input can't alter which fields/ops
-      // get matched — this is filter-syntax safety, not SQL injection (the
-      // underlying query is still parameterized), but worth guarding anyway.
-      const safe = q.replace(/[,()%]/g, " ").trim();
-      if (safe) {
-        builder = builder.or(
-          `username.ilike.%${safe}%,display_name.ilike.%${safe}%,headline.ilike.%${safe}%`,
-        );
-      }
+      const { data, error } = await supabase.rpc("search_catalog_profiles", {
+        search_query: q,
+        filter_specialization: query.specialization ?? null,
+        available_only: query.availableOnly ?? false,
+        sort_newest: query.sort === "newest",
+      });
+
+      if (error || !data) return { profiles: [], total: 0, page, pageSize };
+      const from = (page - 1) * pageSize;
+      return { profiles: data.slice(from, from + pageSize), total: data.length, page, pageSize };
     }
+
+    if (query.sort === "popular") {
+      const { data, error } = await supabase.rpc("catalog_profiles_by_popularity", {
+        filter_specialization: query.specialization ?? null,
+        available_only: query.availableOnly ?? false,
+      });
+
+      if (error || !data) return { profiles: [], total: 0, page, pageSize };
+      const from = (page - 1) * pageSize;
+      return { profiles: data.slice(from, from + pageSize), total: data.length, page, pageSize };
+    }
+
+    let builder = supabase.from("catalog_profiles").select("*", { count: "exact" });
 
     if (query.specialization) {
       builder = builder.eq("specialization", query.specialization);

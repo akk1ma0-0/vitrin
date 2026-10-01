@@ -74,6 +74,7 @@
     "availableOnly": "Sadece müsait olanlar",
     "sortRelevance": "İlgi düzeyi",
     "sortNewest": "En yeniler",
+    "sortPopular": "Popüler",
     "empty": "Henüz eşleşen yok",
     "resultsCount": "{count} freelancer",
     "openToWork": "Çalışmaya açık",
@@ -254,7 +255,15 @@
       "title": "Profil",
       "livePreview": "Canlı önizleme",
       "changeUsername": "Kullanıcı adını değiştir",
-      "usernameCooldown": "Kullanıcı adını {days} gün sonra tekrar değiştirebilirsin"
+      "usernameCooldown": "Kullanıcı adını {days} gün sonra tekrar değiştirebilirsin",
+      "rateTitle": "Ücret",
+      "rateMinLabel": "Min",
+      "rateMaxLabel": "Maks",
+      "rateCurrencyLabel": "Para birimi",
+      "rateUnitLabel": "Faturalama",
+      "rateUnitHour": "Saatlik",
+      "rateUnitProject": "Proje başına",
+      "rateUnitNone": "Belirtilmedi"
     },
     "inbox": {
       "title": "Gelen kutusu",

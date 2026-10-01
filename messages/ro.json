@@ -74,6 +74,7 @@
     "availableOnly": "Doar disponibili",
     "sortRelevance": "Relevanță",
     "sortNewest": "Cele mai noi",
+    "sortPopular": "Populare",
     "empty": "Niciun rezultat încă",
     "resultsCount": "{count} freelanceri",
     "openToWork": "Disponibil",
@@ -254,7 +255,15 @@
       "title": "Profil",
       "livePreview": "Previzualizare live",
       "changeUsername": "Schimbă numele de utilizator",
-      "usernameCooldown": "Poți schimba numele de utilizator din nou peste {days} zile"
+      "usernameCooldown": "Poți schimba numele de utilizator din nou peste {days} zile",
+      "rateTitle": "Tarif",
+      "rateMinLabel": "Min",
+      "rateMaxLabel": "Max",
+      "rateCurrencyLabel": "Monedă",
+      "rateUnitLabel": "Facturare",
+      "rateUnitHour": "Pe oră",
+      "rateUnitProject": "Pe proiect",
+      "rateUnitNone": "Nespecificat"
     },
     "inbox": {
       "title": "Mesaje primite",

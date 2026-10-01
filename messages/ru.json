@@ -74,6 +74,7 @@
     "availableOnly": "Только открытые к работе",
     "sortRelevance": "По релевантности",
     "sortNewest": "Сначала новые",
+    "sortPopular": "Популярные",
     "empty": "Пока никто не подходит под фильтры",
     "resultsCount": "{count} фрилансеров",
     "openToWork": "Открыт к работе",
@@ -254,7 +255,15 @@
       "title": "Профиль",
       "livePreview": "Предпросмотр",
       "changeUsername": "Изменить username",
-      "usernameCooldown": "Сменить username можно будет через {days} дн."
+      "usernameCooldown": "Сменить username можно будет через {days} дн.",
+      "rateTitle": "Ставка",
+      "rateMinLabel": "Мин",
+      "rateMaxLabel": "Макс",
+      "rateCurrencyLabel": "Валюта",
+      "rateUnitLabel": "Тип оплаты",
+      "rateUnitHour": "За час",
+      "rateUnitProject": "За проект",
+      "rateUnitNone": "Не указано"
     },
     "inbox": {
       "title": "Входящие",

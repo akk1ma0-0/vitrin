@@ -74,6 +74,7 @@
     "availableOnly": "Open to work only",
     "sortRelevance": "Relevance",
     "sortNewest": "Newest",
+    "sortPopular": "Popular",
     "empty": "No freelancers match yet",
     "resultsCount": "{count} freelancers",
     "openToWork": "Open to work",
@@ -254,7 +255,15 @@
       "title": "Profile",
       "livePreview": "Live preview",
       "changeUsername": "Change username",
-      "usernameCooldown": "You can change your username again in {days} days"
+      "usernameCooldown": "You can change your username again in {days} days",
+      "rateTitle": "Rate",
+      "rateMinLabel": "Min",
+      "rateMaxLabel": "Max",
+      "rateCurrencyLabel": "Currency",
+      "rateUnitLabel": "Billing",
+      "rateUnitHour": "Per hour",
+      "rateUnitProject": "Per project",
+      "rateUnitNone": "Not specified"
     },
     "inbox": {
       "title": "Inbox",

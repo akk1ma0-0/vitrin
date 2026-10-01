@@ -74,6 +74,7 @@
     "availableOnly": "Лише відкриті до роботи",
     "sortRelevance": "За релевантністю",
     "sortNewest": "Спочатку нові",
+    "sortPopular": "Популярні",
     "empty": "Поки що нічого не знайдено",
     "resultsCount": "{count} фрілансерів",
     "openToWork": "Відкритий до роботи",
@@ -254,7 +255,15 @@
       "title": "Профіль",
       "livePreview": "Попередній перегляд",
       "changeUsername": "Змінити username",
-      "usernameCooldown": "Змінити username можна буде через {days} дн."
+      "usernameCooldown": "Змінити username можна буде через {days} дн.",
+      "rateTitle": "Ставка",
+      "rateMinLabel": "Мін",
+      "rateMaxLabel": "Макс",
+      "rateCurrencyLabel": "Валюта",
+      "rateUnitLabel": "Тип оплати",
+      "rateUnitHour": "За годину",
+      "rateUnitProject": "За проєкт",
+      "rateUnitNone": "Не вказано"
     },
     "inbox": {
       "title": "Вхідні",

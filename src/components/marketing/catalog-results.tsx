@@ -22,7 +22,7 @@ export async function CatalogResults({ locale, sp }: { locale: Locale; sp: Searc
   const specialization =
     specializationParam && isValidSpecialization(specializationParam) ? specializationParam : undefined;
   const availableOnly = sp.available === "1";
-  const sort = sp.sort === "newest" ? "newest" : "relevance";
+  const sort = sp.sort === "newest" || sp.sort === "popular" ? sp.sort : "relevance";
   const page = Math.max(1, Number(sp.page) || 1);
 
   const query: CatalogQuery = { q, specialization, availableOnly, sort, page };

@@ -34,6 +34,10 @@ export function ProfileEditForm({ profile }: { profile: PublicProfile }) {
     (profile.specialization as Specialization) ?? "other",
   );
   const [availableForWork, setAvailableForWork] = useState(profile.available_for_work);
+  const [rateMin, setRateMin] = useState(profile.rate_min != null ? String(profile.rate_min) : "");
+  const [rateMax, setRateMax] = useState(profile.rate_max != null ? String(profile.rate_max) : "");
+  const [rateCurrency, setRateCurrency] = useState(profile.rate_currency);
+  const [rateUnit, setRateUnit] = useState<"hour" | "project" | "none">(profile.rate_unit ?? "none");
   const [email, setEmail] = useState(contacts.email ?? "");
   const [telegram, setTelegram] = useState(contacts.telegram ?? "");
   const [whatsapp, setWhatsapp] = useState(contacts.whatsapp ?? "");
@@ -52,6 +56,10 @@ export function ProfileEditForm({ profile }: { profile: PublicProfile }) {
           bio,
           specialization,
           availableForWork,
+          rateMin: rateMin === "" ? null : Number(rateMin),
+          rateMax: rateMax === "" ? null : Number(rateMax),
+          rateCurrency,
+          rateUnit: rateUnit === "none" ? null : rateUnit,
           contacts: {
             email: email || undefined,
             telegram: telegram || undefined,
@@ -107,6 +115,54 @@ export function ProfileEditForm({ profile }: { profile: PublicProfile }) {
       <div className="flex items-center justify-between rounded-xl border border-border p-4">
         <span className="text-sm font-medium">Open to work</span>
         <Switch checked={availableForWork} onCheckedChange={setAvailableForWork} />
+      </div>
+
+      <div className="flex flex-col gap-3 rounded-xl border border-border p-4">
+        <h2 className="text-sm font-semibold">{t("rateTitle")}</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="flex flex-col gap-1.5">
+            <Label>{t("rateMinLabel")}</Label>
+            <Input
+              value={rateMin}
+              onChange={(e) => setRateMin(e.target.value)}
+              type="number"
+              min={0}
+              inputMode="numeric"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label>{t("rateMaxLabel")}</Label>
+            <Input
+              value={rateMax}
+              onChange={(e) => setRateMax(e.target.value)}
+              type="number"
+              min={0}
+              inputMode="numeric"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label>{t("rateCurrencyLabel")}</Label>
+            <Input
+              value={rateCurrency}
+              onChange={(e) => setRateCurrency(e.target.value.toUpperCase())}
+              maxLength={3}
+              className="uppercase"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label>{t("rateUnitLabel")}</Label>
+            <Select value={rateUnit} onValueChange={(v) => setRateUnit(v as "hour" | "project" | "none")}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">{t("rateUnitNone")}</SelectItem>
+                <SelectItem value="hour">{t("rateUnitHour")}</SelectItem>
+                <SelectItem value="project">{t("rateUnitProject")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-col gap-3 rounded-xl border border-border p-4">

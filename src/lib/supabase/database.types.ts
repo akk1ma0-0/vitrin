@@ -37,6 +37,8 @@ export interface Database {
           onboarding_completed: boolean;
           created_at: string;
           updated_at: string;
+          /** Generated column (0013_catalog_search.sql) — never written to directly. */
+          search_vector: string;
         };
         Insert: Partial<Database["public"]["Tables"]["profiles"]["Row"]> & { id: string };
         Update: Partial<Database["public"]["Tables"]["profiles"]["Row"]>;
@@ -225,6 +227,22 @@ export interface Database {
       is_admin: {
         Args: Record<string, never>;
         Returns: boolean;
+      };
+      search_catalog_profiles: {
+        Args: {
+          search_query: string;
+          filter_specialization?: string | null;
+          available_only?: boolean;
+          sort_newest?: boolean;
+        };
+        Returns: Database["public"]["Tables"]["profiles"]["Row"][];
+      };
+      catalog_profiles_by_popularity: {
+        Args: {
+          filter_specialization?: string | null;
+          available_only?: boolean;
+        };
+        Returns: Database["public"]["Tables"]["profiles"]["Row"][];
       };
     };
     Enums: Record<string, never>;

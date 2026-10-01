@@ -74,6 +74,7 @@
     "availableOnly": "Somente disponíveis",
     "sortRelevance": "Relevância",
     "sortNewest": "Mais recentes",
+    "sortPopular": "Populares",
     "empty": "Ainda não há resultados",
     "resultsCount": "{count} freelancers",
     "openToWork": "Disponível",
@@ -254,7 +255,15 @@
       "title": "Perfil",
       "livePreview": "Prévia ao vivo",
       "changeUsername": "Alterar nome de usuário",
-      "usernameCooldown": "Você poderá alterar o nome de usuário novamente em {days} dias"
+      "usernameCooldown": "Você poderá alterar o nome de usuário novamente em {days} dias",
+      "rateTitle": "Taxa",
+      "rateMinLabel": "Mín",
+      "rateMaxLabel": "Máx",
+      "rateCurrencyLabel": "Moeda",
+      "rateUnitLabel": "Cobrança",
+      "rateUnitHour": "Por hora",
+      "rateUnitProject": "Por projeto",
+      "rateUnitNone": "Não especificado"
     },
     "inbox": {
       "title": "Caixa de entrada",

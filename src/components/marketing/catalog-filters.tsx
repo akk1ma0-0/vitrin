@@ -90,6 +90,7 @@ export function CatalogFilters({ basePath }: { basePath: string }) {
         <SelectContent>
           <SelectItem value="relevance">{t("sortRelevance")}</SelectItem>
           <SelectItem value="newest">{t("sortNewest")}</SelectItem>
+          <SelectItem value="popular">{t("sortPopular")}</SelectItem>
         </SelectContent>
       </Select>
 
