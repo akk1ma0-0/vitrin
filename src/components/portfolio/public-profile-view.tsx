@@ -63,6 +63,11 @@ export function PublicProfileView({
 
   return (
     <div className="flex min-h-screen flex-col">
+      <div className="flex items-center border-b border-border px-4 py-3">
+        <Link href="/">
+          <Logo />
+        </Link>
+      </div>
       {isOwner && (
         <div className="flex items-center justify-between gap-2 border-b border-border bg-surface px-4 py-2 text-sm">
           <span className="truncate text-muted-foreground">{tProfile("ownerBar")}</span>
@@ -100,20 +105,18 @@ export function PublicProfileView({
 
       <footer className="border-t border-border py-8">
         <div className="mx-auto flex max-w-4xl flex-col items-center gap-2 px-4 text-center text-xs text-muted-foreground">
-          {profile.plan === "free" && (
-            <Link
-              href="/"
-              className="group inline-flex flex-col items-center gap-0.5 rounded-xl border border-border px-4 py-2 transition-colors hover:border-foreground/30 hover:bg-surface"
-            >
-              <span className="inline-flex items-center gap-1 text-foreground">
-                {t("madeWith")} <Logo className="text-xs" />
-              </span>
-              <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground group-hover:text-foreground">
-                {t("createYours")}
-                <ArrowRight className="h-3 w-3" />
-              </span>
-            </Link>
-          )}
+          <Link
+            href="/"
+            className="group inline-flex flex-col items-center gap-0.5 rounded-xl border border-border px-4 py-2 transition-colors hover:border-foreground/30 hover:bg-surface"
+          >
+            <span className="inline-flex items-center gap-1 text-foreground">
+              {t("madeWith")} <Logo className="text-xs" />
+            </span>
+            <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground group-hover:text-foreground">
+              {t("createYours")}
+              <ArrowRight className="h-3 w-3" />
+            </span>
+          </Link>
           <ReportDialog targetType="profile" targetId={profile.id} />
         </div>
       </footer>

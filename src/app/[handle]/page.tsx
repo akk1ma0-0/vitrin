@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { isLocale } from "@/i18n/locales";
 import { LandingPage } from "@/components/marketing/landing-page";
 import { PublicProfileView } from "@/components/portfolio/public-profile-view";
+import { redirectIfAuthenticated } from "@/lib/auth-redirect";
 import { getPublicProfileByUsername, getWorksForProfile, isViewingOwnProfile } from "@/lib/profiles";
 
 export async function generateMetadata({ params }: PageProps<"/[handle]">): Promise<Metadata> {
@@ -32,6 +33,10 @@ export default async function HandlePage({ params }: PageProps<"/[handle]">) {
   const { handle } = await params;
 
   if (isLocale(handle)) {
+    // A signed-in visitor has no use for marketing copy they've already seen
+    // — send them straight into the app (dashboard today; the catalog once
+    // it ships). Logged-out visitors see the landing page as before.
+    await redirectIfAuthenticated();
     return <LandingPage locale={handle} />;
   }
 

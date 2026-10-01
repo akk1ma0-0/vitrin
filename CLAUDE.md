@@ -201,17 +201,26 @@ every request (the standard `@supabase/ssr` middleware pattern).
 - Ingest network calls **must** go through `src/lib/ingest/ssrf-guard.ts`'s
   `safeIngestFetch` / `safeIngestFetchFollowingRedirects` — never call
   `fetch()` directly on a user-submitted URL.
-- The public profile page (`PublicProfileView`) is deliberately chrome-free
-  for visitors — no pricing/catalog nav, so it reads as the freelancer's own
-  site rather than an app screen (spec section 5.4). Its only way back to
-  Vitrin is the "Made with Vitrin" footer link, which the spec requires
-  removed entirely on Pro plans (section 8's branding row) — don't add a
-  second always-visible Vitrin link/badge elsewhere on the page, that would
-  defeat the Pro no-branding feature. The one exception is `isOwner`
-  (`isViewingOwnProfile()` in `src/lib/profiles.ts`): when the signed-in
-  viewer owns the profile, a "go to dashboard" bar is shown regardless of
-  plan, since that's the owner managing their own page, not platform
-  branding on a visitor's view.
+- The public profile page (`PublicProfileView`) has no pricing/catalog nav,
+  so it still mostly reads as the freelancer's own site rather than an app
+  screen (spec section 5.4). It does have a persistent Vitrin logo (top bar,
+  links to `/`) and a "Made with Vitrin" footer link on **every** plan — the
+  owner explicitly decided not to implement the spec's section 8 "branding
+  removed on Pro" row; `profiles.plan` is no longer read when deciding
+  whether to show either. `isOwner` (`isViewingOwnProfile()` in
+  `src/lib/profiles.ts`) additionally shows a "go to dashboard" bar when the
+  signed-in viewer owns the profile being viewed.
+- `redirectIfAuthenticated()` (`src/lib/auth-redirect.ts`) sends an
+  already-signed-in visitor straight to `/dashboard` (or `/onboarding` if
+  they never finished it) instead of showing marketing/auth pages they have
+  no use for. Called from the three places that matters: the bare locale
+  root (`/{locale}`, i.e. the landing page), `/login`, `/signup` — **not**
+  from the `[handle]` layout, so a signed-in user can still deliberately
+  browse `/pricing`, `/catalog`, legal pages, or anyone's profile page.
+  Since the Logo everywhere links to `/` → `/{locale}`, this one redirect is
+  also why clicking the logo while signed in lands in the dashboard instead
+  of the landing page, without needing every Logo link to know about auth
+  state.
 - Commit after each meaningful unit of work (this mirrors spec section 14's
   "commit after every point, run tests after every stage").
 
