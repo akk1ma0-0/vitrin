@@ -1,4 +1,5 @@
 import { ProfileEditForm } from "@/components/dashboard/profile-edit-form";
+import { ConnectedAccountsForm } from "@/components/dashboard/connected-accounts-form";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function DashboardProfilePage() {
@@ -11,5 +12,15 @@ export default async function DashboardProfilePage() {
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
   if (!profile) return null;
 
-  return <ProfileEditForm profile={profile} />;
+  return (
+    <>
+      <ProfileEditForm profile={profile} />
+      <div className="mx-auto mt-6 max-w-2xl">
+        <ConnectedAccountsForm
+          telegramLinked={profile.telegram_id != null}
+          telegramBotUsername={process.env.TELEGRAM_BOT_USERNAME ?? null}
+        />
+      </div>
+    </>
+  );
 }

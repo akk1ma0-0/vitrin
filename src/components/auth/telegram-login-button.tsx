@@ -10,14 +10,23 @@ import { useEffect, useRef } from "react";
  * parent to mount its iframe into, so it has to be appended imperatively
  * rather than rendered as JSX.
  */
-export function TelegramLoginButton({ botUsername, next }: { botUsername: string; next?: string }) {
+export function TelegramLoginButton({
+  botUsername,
+  next,
+  authPath = "/api/auth/telegram",
+}: {
+  botUsername: string;
+  next?: string;
+  /** "/api/auth/telegram" (default) signs in/up; "/api/auth/telegram/link" attaches the Telegram account to the already-signed-in user instead. */
+  authPath?: string;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const authUrl = new URL("/api/auth/telegram", window.location.origin);
+    const authUrl = new URL(authPath, window.location.origin);
     if (next) authUrl.searchParams.set("next", next);
 
     const script = document.createElement("script");
@@ -33,7 +42,7 @@ export function TelegramLoginButton({ botUsername, next }: { botUsername: string
     return () => {
       container.replaceChildren();
     };
-  }, [botUsername, next]);
+  }, [botUsername, next, authPath]);
 
   return <div ref={containerRef} className="flex justify-center" />;
 }

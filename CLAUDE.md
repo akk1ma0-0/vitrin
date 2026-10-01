@@ -216,6 +216,28 @@ BotFather; the button simply doesn't render when
 `TELEGRAM_BOT_USERNAME` is unset, same graceful-degradation pattern as the
 other optional services.
 
+`/dashboard/profile` has a "login methods" card (`ConnectedAccountsForm`,
+`src/components/dashboard/connected-accounts-form.tsx`) so signing up with
+one method doesn't lock you out of the others: connect/disconnect Google
+and Facebook via Supabase's own `linkIdentity()`/`unlinkIdentity()` (this
+needs **manual linking enabled** in the Supabase dashboard — Authentication
+→ Providers — off by default; without it `linkIdentity()` errors), connect
+Telegram via the same widget pointed at a second route,
+`/api/auth/telegram/link` (verifies the signed payload like
+`/api/auth/telegram` does, but — since the user is already signed in —
+just sets `profiles.telegram_id` on their own row via RLS instead of
+minting a new session; a `23505` unique-violation means that Telegram
+account is already linked elsewhere), and set/change a password regardless
+of how the account was created via `supabase.auth.updateUser({ password
+})` — Supabase explicitly supports this for OAuth-only accounts. The
+"has a password" check reads `identities` from `getUserIdentities()` for a
+`provider: "email"` entry rather than a separate column. `/api/auth/callback`
+had to learn the difference between a plain sign-in failure (bounce to
+`/login`) and a failed `linkIdentity()` redirect (bounce back to `next`
+with `?auth_error=1` instead — the user is already signed in, so sending
+them to `/login` would just loop them back to the dashboard having
+swallowed the error).
+
 ## Stack
 
 - **Framework:** Next.js 16 (App Router, Turbopack by default), TypeScript
