@@ -3,9 +3,10 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { isLocale } from "@/i18n/locales";
-import { LandingPage } from "@/components/marketing/landing-page";
+import { CatalogHero } from "@/components/marketing/catalog-hero";
+import { CatalogResults } from "@/components/marketing/catalog-results";
 import { PublicProfileView } from "@/components/portfolio/public-profile-view";
-import { redirectIfAuthenticated } from "@/lib/auth-redirect";
+import { isSignedIn } from "@/lib/auth-redirect";
 import { getPublicProfileByUsername, getWorksForProfile, isViewingOwnProfile } from "@/lib/profiles";
 
 export async function generateMetadata({ params }: PageProps<"/[handle]">): Promise<Metadata> {
@@ -29,15 +30,30 @@ export async function generateMetadata({ params }: PageProps<"/[handle]">): Prom
   };
 }
 
-export default async function HandlePage({ params }: PageProps<"/[handle]">) {
+export default async function HandlePage({ params, searchParams }: PageProps<"/[handle]">) {
   const { handle } = await params;
 
   if (isLocale(handle)) {
-    // A signed-in visitor has no use for marketing copy they've already seen
-    // — send them straight into the app (dashboard today; the catalog once
-    // it ships). Logged-out visitors see the landing page as before.
-    await redirectIfAuthenticated();
-    return <LandingPage locale={handle} />;
+    // The catalog is the home page: signed-out visitors get a short pitch +
+    // "create my page" CTA above it, signed-in visitors (who have an
+    // account already and don't need the pitch) get a plain heading. Either
+    // way, everyone lands on the same directory — no redirect away from it.
+    const sp = await searchParams;
+    const [signedIn, t] = await Promise.all([isSignedIn(), getTranslations("catalog")]);
+
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-12">
+        {signedIn ? (
+          <div className="mb-8 text-center">
+            <h1 className="text-3xl font-semibold">{t("title")}</h1>
+            <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
+          </div>
+        ) : (
+          <CatalogHero locale={handle} />
+        )}
+        <CatalogResults locale={handle} sp={sp} />
+      </div>
+    );
   }
 
   const profile = await getPublicProfileByUsername(handle);

@@ -32,12 +32,6 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         </Link>
 
         <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-          <Link href={`/${locale}#how-it-works`} className="text-muted-foreground hover:text-foreground">
-            {t("howItWorks")}
-          </Link>
-          <Link href={`/${locale}/catalog`} className="text-muted-foreground hover:text-foreground">
-            {t("catalog")}
-          </Link>
           <Link href={`/${locale}/pricing`} className="text-muted-foreground hover:text-foreground">
             {t("pricing")}
           </Link>
@@ -46,11 +40,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         <div className="flex items-center gap-1">
           <MarketingMobileNav
             label={t("menu")}
-            links={[
-              { href: `/${locale}#how-it-works`, label: t("howItWorks") },
-              { href: `/${locale}/catalog`, label: t("catalog") },
-              { href: `/${locale}/pricing`, label: t("pricing") },
-            ]}
+            links={[{ href: `/${locale}/pricing`, label: t("pricing") }]}
           />
           <LocaleSwitcher current={locale} />
           <ThemeToggle

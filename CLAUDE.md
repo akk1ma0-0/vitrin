@@ -54,8 +54,8 @@ Built:
 - Public profile page, work viewer with adapters per render mode (live
   iframe with device-width scaling, screenshot scroller, video/generic
   embed, GitHub card, image gallery, PDF), hire form (rate-limited,
-  moderated, emailed via Resend), report flow, landing page, pricing,
-  legal pages (Terms/Privacy/Refund).
+  moderated, emailed via Resend), report flow, pricing, legal pages
+  (Terms/Privacy/Refund).
 - Dashboard: overview (stats, checklist, recent requests), works CRUD with
   drag-and-drop reordering, profile editor, inbox, settings (theme, Pro
   accent color, language, GDPR export/delete), billing (plan display; no
@@ -63,21 +63,32 @@ Built:
 - Admin moderation queue (flagged works + open reports, with
   approve/hide/delete/ban actions logged to `moderation_log`).
 - SEO: sitemap.xml, robots.txt, dynamic OG images, JSON-LD on profiles.
-- Catalog (`[handle]/catalog/page.tsx`, built ahead of its stage-2 slot):
-  search (plain ILIKE on username/display_name/headline, not yet the
-  spec's full-text + pg_trgm), filters (specialization, open-to-work),
-  sort (relevance = Pro-first then newest, or newest), pagination, cards
-  with up to 3 work covers (`getCatalogCovers()` in `src/lib/profiles.ts`).
-  Reads straight off the existing `catalog_profiles` view, so the spec
-  8.2 visibility gate (active, verified, avatar + headline set, >=3 ready
-  works) already applies — a profile with fewer than 3 works simply won't
-  show up yet, that's not a bug. Cards open with `target="_blank"` so
-  browsing the directory doesn't lose the filtered list. Rate display is
-  wired up but will stay empty for every profile today — there's no
-  profile-editor UI yet for `rate_min`/`rate_max`/`rate_unit`. Not yet
-  built: Postgres full-text/trigram search, "popular" sort (needs a
-  30-day view aggregate across profiles, more than a plain `.order()`
-  can do), per-specialization SEO pages (`/catalog/{specialization}`).
+- Catalog (built ahead of its stage-2 slot) **is now the home page**
+  (`/{locale}`, see "Routing architecture" below) rather than its own
+  route — the owner decided the directory should be what visitors land on
+  instead of a conversion-focused landing page. `/{locale}/catalog` is
+  kept as a redirect to `/{locale}` (with its query string) so old
+  links/bookmarks don't 404. Features: search (plain ILIKE on
+  username/display_name/headline, not yet the spec's full-text +
+  pg_trgm), filters (specialization, open-to-work), sort (relevance =
+  Pro-first then newest, or newest), pagination, cards with up to 3 work
+  covers (`getCatalogCovers()` in `src/lib/profiles.ts`). Reads straight
+  off the existing `catalog_profiles` view, so the spec 8.2 visibility
+  gate (active, verified, avatar + headline set, >=3 ready works) already
+  applies — a profile with fewer than 3 works simply won't show up yet,
+  that's not a bug. Cards open with `target="_blank"` so browsing the
+  directory doesn't lose the filtered list. Rate display is wired up but
+  will stay empty for every profile today — there's no profile-editor UI
+  yet for `rate_min`/`rate_max`/`rate_unit`. Not yet built: Postgres
+  full-text/trigram search, "popular" sort (needs a 30-day view aggregate
+  across profiles, more than a plain `.order()` can do),
+  per-specialization SEO pages (`/catalog/{specialization}`). The old
+  multi-section marketing landing page (steps/features/CTA) is gone —
+  `CatalogHero` (`src/components/marketing/catalog-hero.tsx`) is the
+  entire pitch now: title, subtitle, one "create my page" CTA, shown only
+  to signed-out visitors (`isSignedIn()` in `src/lib/auth-redirect.ts`);
+  a signed-in visitor sees a plain "Freelancers" heading instead, since
+  the "create my page" pitch doesn't apply to them.
 
 Deliberately deferred to stage 2 per the spec's own plan: Paddle billing,
 Facebook/Telegram login, notion/telegram_post/behance/dribbble/
@@ -158,8 +169,9 @@ at request time:
   `app/[handle]/catalog/page.tsx`, etc. — every one of these pages must call
   `notFound()` at the top if `!isLocale(handle)`.
 - `app/[handle]/page.tsx` and `app/[handle]/w/[workSlug]/page.tsx` render
-  the marketing landing page when `isLocale(handle)`, otherwise look up a
-  profile by that username and 404 if none exists.
+  the catalog (the home page, see "Current status" above) when
+  `isLocale(handle)`, otherwise look up a profile by that username and
+  404 if none exists.
 - `dashboard/`, `admin/`, `onboarding/`, `api/` are ordinary static
   segments at the app root, so they take precedence over `[handle]` and
   need no special-casing.
@@ -222,15 +234,15 @@ every request (the standard `@supabase/ssr` middleware pattern).
   signed-in viewer owns the profile being viewed.
 - `redirectIfAuthenticated()` (`src/lib/auth-redirect.ts`) sends an
   already-signed-in visitor straight to `/dashboard` (or `/onboarding` if
-  they never finished it) instead of showing marketing/auth pages they have
-  no use for. Called from the three places that matters: the bare locale
-  root (`/{locale}`, i.e. the landing page), `/login`, `/signup` — **not**
-  from the `[handle]` layout, so a signed-in user can still deliberately
-  browse `/pricing`, `/catalog`, legal pages, or anyone's profile page.
-  Since the Logo everywhere links to `/` → `/{locale}`, this one redirect is
-  also why clicking the logo while signed in lands in the dashboard instead
-  of the landing page, without needing every Logo link to know about auth
-  state.
+  they never finished it) instead of showing them `/login` or `/signup`,
+  which they have no use for. **Not** called from the bare locale root
+  (`/{locale}`) any more — now that the root shows the catalog instead of
+  a conversion-focused landing page, it's genuinely useful content for a
+  signed-in visitor too (browsing other freelancers), so they see it like
+  anyone else; `isSignedIn()` in the same file just toggles whether
+  `CatalogHero`'s "create my page" pitch shows above it. Logo links
+  everywhere point at `/` → `/{locale}`, i.e. the catalog, for both signed
+  in and signed out visitors.
 - Commit after each meaningful unit of work (this mirrors spec section 14's
   "commit after every point, run tests after every stage").
 - There is no self-service way to grant `profiles.role = 'admin'`, and that

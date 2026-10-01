@@ -35,3 +35,16 @@ export async function redirectIfAuthenticated(): Promise<void> {
 
   if (destination) redirect(destination);
 }
+
+/** Whether anyone is currently signed in — used to tweak page content (not to gate access). */
+export async function isSignedIn(): Promise<boolean> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return Boolean(user);
+  } catch {
+    return false;
+  }
+}
