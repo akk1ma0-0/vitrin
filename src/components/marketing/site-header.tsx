@@ -31,12 +31,6 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           <Logo />
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-          <Link href={`/${locale}/pricing`} className="text-muted-foreground hover:text-foreground">
-            {t("pricing")}
-          </Link>
-        </nav>
-
         <div className="flex items-center gap-1">
           <MarketingMobileNav
             label={t("menu")}
@@ -64,6 +58,12 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
               </Button>
             </>
           )}
+          <Link
+            href={`/${locale}/pricing`}
+            className="hidden text-sm font-medium text-muted-foreground hover:text-foreground md:ml-2 md:inline"
+          >
+            {t("pricing")}
+          </Link>
         </div>
       </div>
     </header>
