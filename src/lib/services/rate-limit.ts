@@ -27,6 +27,17 @@ const hireByIpLimiter = buildLimiter(3, "1 h");
 const hireByProfileLimiter = buildLimiter(20, "1 d");
 const reportLimiter = buildLimiter(10, "1 h");
 
+// Spec section 7: login needs a rate limit alongside Turnstile. 10/15min is
+// generous enough for someone genuinely mistyping a password a few times,
+// tight enough to make a brute-force sweep impractical.
+const loginLimiter = buildLimiter(10, "15 m");
+// Fires on every keystroke in the username field (debounced client-side,
+// but still frequent by design) — generous so normal typing never trips it.
+const usernameCheckLimiter = buildLimiter(30, "1 m");
+// /api/events fires on every page view / work expand / click across the
+// whole public site — generous per-IP ceiling just to stop a scripted flood.
+const eventsLimiter = buildLimiter(60, "1 m");
+
 export async function checkHireRateLimit(
   ipHash: string,
   profileId: string,
@@ -45,5 +56,23 @@ export async function checkHireRateLimit(
 export async function checkReportRateLimit(ipHash: string): Promise<boolean> {
   if (!reportLimiter) return true;
   const { success } = await reportLimiter.limit(`report:${ipHash}`);
+  return success;
+}
+
+export async function checkLoginRateLimit(ipHash: string): Promise<boolean> {
+  if (!loginLimiter) return true;
+  const { success } = await loginLimiter.limit(`login:${ipHash}`);
+  return success;
+}
+
+export async function checkUsernameCheckRateLimit(ipHash: string): Promise<boolean> {
+  if (!usernameCheckLimiter) return true;
+  const { success } = await usernameCheckLimiter.limit(`username-check:${ipHash}`);
+  return success;
+}
+
+export async function checkEventsRateLimit(ipHash: string): Promise<boolean> {
+  if (!eventsLimiter) return true;
+  const { success } = await eventsLimiter.limit(`events:${ipHash}`);
   return success;
 }

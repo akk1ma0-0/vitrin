@@ -1,6 +1,10 @@
+import { createHash } from "node:crypto";
+
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
+import { getClientIp } from "@/lib/analytics";
+import { checkLoginRateLimit } from "@/lib/services/rate-limit";
 import { createSupabaseServerClient, createSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
 const schema = z.object({
@@ -15,6 +19,12 @@ const schema = z.object({
  * cookies land on this response.
  */
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request.headers);
+  const ipHash = createHash("sha256").update(ip).digest("hex");
+  if (!(await checkLoginRateLimit(ipHash))) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
+
   const json = await request.json().catch(() => null);
   const parsed = schema.safeParse(json);
   if (!parsed.success) {

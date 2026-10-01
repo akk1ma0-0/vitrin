@@ -107,9 +107,23 @@ Built:
 Deliberately deferred to stage 2 per the spec's own plan: Paddle billing,
 Facebook/Telegram login, notion/telegram_post/behance/dribbble/
 upload_video/upload_pdf adapters, link-recheck and screenshot-refresh
-cron jobs, Upstash-backed rate limiting on every public endpoint (the
-hire/report routes already call the same rate-limit helper, which
-no-ops until `UPSTASH_REDIS_REST_URL` is set).
+cron jobs.
+
+Rate limiting (`src/lib/services/rate-limit.ts`) now covers every public,
+unauthenticated, abusable endpoint, not just hire/report: `/api/auth/login`
+(brute-force), `/api/auth/username-available` (enumeration/spam), and
+`/api/events` (flood). Still no-ops until `UPSTASH_REDIS_REST_URL` /
+`UPSTASH_REDIS_REST_TOKEN` are set — every limiter function returns
+`true`/`{ ok: true }` when `buildLimiter()` got no Upstash config, so none
+of this blocks local dev or a deploy that hasn't set it up yet. Routes that
+were deliberately left out: `/api/auth/callback` (one-time OAuth code
+exchange, not a brute-force-able input) and anything that already requires
+a signed-in session (`/api/profile`, `/api/works*`, `/api/account/*`,
+`/api/admin/*`) — abuse there is already bounded by needing a real
+account, which is a higher bar than an IP-based limit adds. Note: the
+spec's own security table (section 7) also wants Turnstile on login, not
+just a rate limit — login has neither today beyond this new limiter;
+signup already has Turnstile.
 
 ## Stack
 

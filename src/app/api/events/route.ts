@@ -1,7 +1,10 @@
+import { createHash } from "node:crypto";
+
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
 import { computeVisitorHash, getClientIp, getCountry, getDeviceType, getReferrerHost } from "@/lib/analytics";
+import { checkEventsRateLimit } from "@/lib/services/rate-limit";
 import { createSupabaseServerClient, createSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
 const eventSchema = z.object({
@@ -28,6 +31,10 @@ export async function POST(request: NextRequest) {
   const { type, profileId, workId, contactType } = parsed.data;
   const userAgent = request.headers.get("user-agent") ?? "";
   const ip = getClientIp(request.headers);
+  const ipHash = createHash("sha256").update(ip).digest("hex");
+  if (!(await checkEventsRateLimit(ipHash))) {
+    return NextResponse.json({ ok: false, error: "rate_limited" }, { status: 429 });
+  }
 
   try {
     // Don't log the owner viewing their own page (spec section 4).
