@@ -84,7 +84,9 @@
     "rateUnit": {
       "hour": "/год",
       "project": "/проєкт"
-    }
+    },
+    "specializationTitle": "Фрілансери: {specialization}",
+    "specializationDescription": "Портфоліо фрілансерів-спеціалістів «{specialization}», створені на Vitrin."
   },
   "pricing": {
     "title": "Прості тарифи",

@@ -84,7 +84,9 @@
     "rateUnit": {
       "hour": "/h",
       "project": "/projet"
-    }
+    },
+    "specializationTitle": "Freelances : {specialization}",
+    "specializationDescription": "Portfolios de freelances {specialization}, créés avec Vitrin."
   },
   "pricing": {
     "title": "Des tarifs simples",

@@ -84,7 +84,9 @@
     "rateUnit": {
       "hour": "/sa",
       "project": "/proje"
-    }
+    },
+    "specializationTitle": "{specialization} freelancerları",
+    "specializationDescription": "Vitrin ile oluşturulan {specialization} freelancerlarının portföyleri."
   },
   "pricing": {
     "title": "Basit fiyatlandırma",

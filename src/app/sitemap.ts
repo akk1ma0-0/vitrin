@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { LOCALES } from "@/i18n/locales";
+import { SPECIALIZATIONS } from "@/lib/specializations";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const MARKETING_ROUTES = ["", "/pricing", "/catalog", "/terms", "/privacy", "/refund", "/login", "/signup"];
@@ -13,6 +14,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${siteUrl}/${locale}${route}`,
       changeFrequency: "weekly" as const,
       priority: route === "" ? 1 : 0.6,
+    })),
+  );
+
+  // "other" isn't a meaningful search term/landing page on its own.
+  const specializationEntries: MetadataRoute.Sitemap = LOCALES.flatMap((locale) =>
+    SPECIALIZATIONS.filter((s) => s !== "other").map((specialization) => ({
+      url: `${siteUrl}/${locale}/catalog/${specialization}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.5,
     })),
   );
 
@@ -34,5 +44,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Supabase not configured yet in this environment — sitemap still returns the marketing routes.
   }
 
-  return [...marketingEntries, ...profileEntries];
+  return [...marketingEntries, ...specializationEntries, ...profileEntries];
 }

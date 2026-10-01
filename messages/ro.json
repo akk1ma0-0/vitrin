@@ -84,7 +84,9 @@
     "rateUnit": {
       "hour": "/oră",
       "project": "/proiect"
-    }
+    },
+    "specializationTitle": "Freelanceri: {specialization}",
+    "specializationDescription": "Portofolii ale freelancerilor {specialization}, create cu Vitrin."
   },
   "pricing": {
     "title": "Prețuri simple",

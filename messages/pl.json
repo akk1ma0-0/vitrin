@@ -84,7 +84,9 @@
     "rateUnit": {
       "hour": "/godz",
       "project": "/projekt"
-    }
+    },
+    "specializationTitle": "Freelancerzy: {specialization}",
+    "specializationDescription": "Portfolio freelancerów specjalizujących się w: {specialization}, stworzone w Vitrin."
   },
   "pricing": {
     "title": "Proste ceny",
