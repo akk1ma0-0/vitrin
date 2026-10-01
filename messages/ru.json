@@ -251,7 +251,19 @@
       "hide": "Скрыть",
       "unhide": "Показать",
       "refreshScreenshot": "Обновить скриншот",
-      "usedOf": "{used} из {limit}"
+      "usedOf": "{used} из {limit}",
+      "uploadKindLabel": "Тип файла",
+      "uploadKindImage": "Изображение(я)",
+      "uploadKindVideo": "Видео",
+      "uploadKindPdf": "PDF",
+      "chooseFiles": "Выбрать файл(ы)",
+      "uploading": "Загрузка…",
+      "upload": "Загрузить",
+      "proOnly": "Только Pro",
+      "uploadErrorFileTooLarge": "Файл слишком большой для вашего тарифа",
+      "uploadErrorQuotaExceeded": "Вы исчерпали лимит хранилища",
+      "uploadErrorPlanKind": "Обновитесь до Pro, чтобы загружать этот тип файлов",
+      "uploadErrorGeneric": "Не удалось загрузить файл"
     },
     "profile": {
       "title": "Профиль",

@@ -251,7 +251,19 @@
       "hide": "Ocultar",
       "unhide": "Mostrar",
       "refreshScreenshot": "Actualizar captura",
-      "usedOf": "{used} de {limit}"
+      "usedOf": "{used} de {limit}",
+      "uploadKindLabel": "Tipo de archivo",
+      "uploadKindImage": "Imagen(es)",
+      "uploadKindVideo": "Video",
+      "uploadKindPdf": "PDF",
+      "chooseFiles": "Elegir archivo(s)",
+      "uploading": "Subiendo…",
+      "upload": "Subir",
+      "proOnly": "Solo Pro",
+      "uploadErrorFileTooLarge": "El archivo es demasiado grande para tu plan",
+      "uploadErrorQuotaExceeded": "Has agotado tu cuota de almacenamiento",
+      "uploadErrorPlanKind": "Mejora a Pro para subir este tipo de archivo",
+      "uploadErrorGeneric": "Error al subir el archivo"
     },
     "profile": {
       "title": "Perfil",

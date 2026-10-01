@@ -251,7 +251,19 @@
       "hide": "Hide",
       "unhide": "Unhide",
       "refreshScreenshot": "Refresh screenshot",
-      "usedOf": "{used} of {limit}"
+      "usedOf": "{used} of {limit}",
+      "uploadKindLabel": "File type",
+      "uploadKindImage": "Image(s)",
+      "uploadKindVideo": "Video",
+      "uploadKindPdf": "PDF",
+      "chooseFiles": "Choose file(s)",
+      "uploading": "Uploading…",
+      "upload": "Upload",
+      "proOnly": "Pro only",
+      "uploadErrorFileTooLarge": "File is too large for your plan",
+      "uploadErrorQuotaExceeded": "You've used up your storage quota",
+      "uploadErrorPlanKind": "Upgrade to Pro to upload this file type",
+      "uploadErrorGeneric": "Upload failed"
     },
     "profile": {
       "title": "Profile",

@@ -251,7 +251,19 @@
       "hide": "Ausblenden",
       "unhide": "Einblenden",
       "refreshScreenshot": "Screenshot aktualisieren",
-      "usedOf": "{used} von {limit}"
+      "usedOf": "{used} von {limit}",
+      "uploadKindLabel": "Dateityp",
+      "uploadKindImage": "Bild(er)",
+      "uploadKindVideo": "Video",
+      "uploadKindPdf": "PDF",
+      "chooseFiles": "Datei(en) auswählen",
+      "uploading": "Wird hochgeladen…",
+      "upload": "Hochladen",
+      "proOnly": "Nur Pro",
+      "uploadErrorFileTooLarge": "Datei ist für Ihren Plan zu groß",
+      "uploadErrorQuotaExceeded": "Ihr Speicherkontingent ist aufgebraucht",
+      "uploadErrorPlanKind": "Upgraden Sie auf Pro, um diesen Dateityp hochzuladen",
+      "uploadErrorGeneric": "Hochladen fehlgeschlagen"
     },
     "profile": {
       "title": "Profil",

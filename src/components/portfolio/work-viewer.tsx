@@ -78,6 +78,16 @@ export function WorkViewer({
         />
       ) : null;
     }
+    if (work.render_mode === "video" && work.source_type === "upload_video") {
+      return work.source_url ? (
+        <video
+          src={work.source_url}
+          poster={work.cover_url ?? undefined}
+          controls
+          className="mx-auto max-h-[70vh] w-full rounded-lg bg-black"
+        />
+      ) : null;
+    }
     if (work.render_mode === "video" || work.render_mode === "embed") {
       return work.embed_url ? (
         <EmbedFrame url={work.embed_url} title={work.title ?? "embed"} />
@@ -87,7 +97,9 @@ export function WorkViewer({
       return <GithubCard sourceUrl={work.source_url ?? "#"} meta={work.meta} />;
     }
     if (work.render_mode === "gallery") {
-      return <ImageGallery images={work.cover_url ? [work.cover_url] : []} alt={work.title ?? ""} />;
+      const meta = work.meta as { images?: string[] } | null;
+      const images = meta?.images?.length ? meta.images : work.cover_url ? [work.cover_url] : [];
+      return <ImageGallery images={images} alt={work.title ?? ""} />;
     }
     if (work.render_mode === "pdf") {
       return work.source_url ? <PdfViewer url={work.source_url} /> : null;

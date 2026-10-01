@@ -251,7 +251,19 @@
       "hide": "Приховати",
       "unhide": "Показати",
       "refreshScreenshot": "Оновити скриншот",
-      "usedOf": "{used} з {limit}"
+      "usedOf": "{used} з {limit}",
+      "uploadKindLabel": "Тип файлу",
+      "uploadKindImage": "Зображення",
+      "uploadKindVideo": "Відео",
+      "uploadKindPdf": "PDF",
+      "chooseFiles": "Вибрати файл(и)",
+      "uploading": "Завантаження…",
+      "upload": "Завантажити",
+      "proOnly": "Лише Pro",
+      "uploadErrorFileTooLarge": "Файл завеликий для вашого тарифу",
+      "uploadErrorQuotaExceeded": "Ви вичерпали квоту сховища",
+      "uploadErrorPlanKind": "Перейдіть на Pro, щоб завантажувати цей тип файлу",
+      "uploadErrorGeneric": "Не вдалося завантажити файл"
     },
     "profile": {
       "title": "Профіль",

@@ -251,7 +251,19 @@
       "hide": "Ascunde",
       "unhide": "Afișează",
       "refreshScreenshot": "Actualizează captura de ecran",
-      "usedOf": "{used} din {limit}"
+      "usedOf": "{used} din {limit}",
+      "uploadKindLabel": "Tip de fișier",
+      "uploadKindImage": "Imagine(i)",
+      "uploadKindVideo": "Video",
+      "uploadKindPdf": "PDF",
+      "chooseFiles": "Alege fișier(e)",
+      "uploading": "Se încarcă…",
+      "upload": "Încarcă",
+      "proOnly": "Doar Pro",
+      "uploadErrorFileTooLarge": "Fișierul este prea mare pentru planul tău",
+      "uploadErrorQuotaExceeded": "Ai depășit cota de stocare",
+      "uploadErrorPlanKind": "Treci la Pro pentru a încărca acest tip de fișier",
+      "uploadErrorGeneric": "Încărcarea a eșuat"
     },
     "profile": {
       "title": "Profil",

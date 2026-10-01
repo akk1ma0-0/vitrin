@@ -251,7 +251,19 @@
       "hide": "Gizle",
       "unhide": "Göster",
       "refreshScreenshot": "Ekran görüntüsünü yenile",
-      "usedOf": "{limit} üzerinden {used}"
+      "usedOf": "{limit} üzerinden {used}",
+      "uploadKindLabel": "Dosya türü",
+      "uploadKindImage": "Görsel(ler)",
+      "uploadKindVideo": "Video",
+      "uploadKindPdf": "PDF",
+      "chooseFiles": "Dosya seç",
+      "uploading": "Yükleniyor…",
+      "upload": "Yükle",
+      "proOnly": "Yalnızca Pro",
+      "uploadErrorFileTooLarge": "Dosya, planınız için çok büyük",
+      "uploadErrorQuotaExceeded": "Depolama kotanızı doldurdunuz",
+      "uploadErrorPlanKind": "Bu dosya türünü yüklemek için Pro'ya yükseltin",
+      "uploadErrorGeneric": "Yükleme başarısız oldu"
     },
     "profile": {
       "title": "Profil",

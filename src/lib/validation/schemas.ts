@@ -44,6 +44,20 @@ export const bulkLinksSchema = z.object({
     .max(10, "max_10_links"),
 });
 
+export const workUploadSchema = z.object({
+  kind: z.enum(["image", "video", "pdf"]),
+  files: z
+    .array(
+      z.object({
+        path: z.string().min(1).max(500),
+        mime: z.string().min(1).max(100),
+        sizeBytes: z.number().int().positive(),
+      }),
+    )
+    .min(1)
+    .max(10),
+});
+
 export const profileSchema = z.object({
   username: usernameSchema,
   displayName: z.string().min(1).max(60),

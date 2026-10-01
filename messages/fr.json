@@ -251,7 +251,19 @@
       "hide": "Masquer",
       "unhide": "Afficher",
       "refreshScreenshot": "Actualiser la capture d'écran",
-      "usedOf": "{used} sur {limit}"
+      "usedOf": "{used} sur {limit}",
+      "uploadKindLabel": "Type de fichier",
+      "uploadKindImage": "Image(s)",
+      "uploadKindVideo": "Vidéo",
+      "uploadKindPdf": "PDF",
+      "chooseFiles": "Choisir un ou plusieurs fichiers",
+      "uploading": "Téléversement…",
+      "upload": "Téléverser",
+      "proOnly": "Pro uniquement",
+      "uploadErrorFileTooLarge": "Le fichier est trop volumineux pour votre offre",
+      "uploadErrorQuotaExceeded": "Vous avez atteint votre quota de stockage",
+      "uploadErrorPlanKind": "Passez à Pro pour téléverser ce type de fichier",
+      "uploadErrorGeneric": "Échec du téléversement"
     },
     "profile": {
       "title": "Profil",

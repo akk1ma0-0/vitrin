@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   DndContext,
@@ -16,6 +16,15 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -26,8 +35,30 @@ import {
 import { WorkRow } from "@/components/dashboard/work-row";
 import { EditWorkDialog } from "@/components/dashboard/edit-work-dialog";
 import { getPlanLimits, type Plan } from "@/lib/plans";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { PublicWork } from "@/lib/profiles";
 import type { WorkCategory } from "@/lib/specializations";
+
+type UploadKind = "image" | "video" | "pdf";
+
+const ACCEPT_BY_KIND: Record<UploadKind, string> = {
+  image: "image/*",
+  video: "video/*",
+  pdf: "application/pdf",
+};
+
+const UPLOAD_ERROR_KEYS: Record<string, string> = {
+  file_too_large: "uploadErrorFileTooLarge",
+  storage_quota_exceeded: "uploadErrorQuotaExceeded",
+  plan_does_not_allow_video: "uploadErrorPlanKind",
+  plan_does_not_allow_pdf: "uploadErrorPlanKind",
+  plan_does_not_allow_image: "uploadErrorPlanKind",
+};
+
+function fileExtension(name: string): string {
+  const dot = name.lastIndexOf(".");
+  return dot === -1 ? "" : name.slice(dot + 1).toLowerCase();
+}
 
 export function WorksManager({ initialWorks, plan }: { initialWorks: PublicWork[]; plan: Plan }) {
   const t = useTranslations("dashboard.works");
@@ -36,8 +67,12 @@ export function WorksManager({ initialWorks, plan }: { initialWorks: PublicWork[
   const [linksText, setLinksText] = useState("");
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<PublicWork | null>(null);
+  const [uploadKind, setUploadKind] = useState<UploadKind>("image");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const limit = getPlanLimits(plan).maxWorks;
+  const limits = getPlanLimits(plan);
+  const limit = limits.maxWorks;
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   async function refreshWorks() {
@@ -76,6 +111,56 @@ export function WorksManager({ initialWorks, plan }: { initialWorks: PublicWork[
       await refreshWorks();
     } finally {
       setAdding(false);
+    }
+  }
+
+  async function handleUpload() {
+    const selected = Array.from(fileInputRef.current?.files ?? []);
+    if (selected.length === 0) return;
+
+    const oversized = selected.find((f) => f.size > limits.maxUploadFileBytes);
+    if (oversized) {
+      toast.error(t("uploadErrorFileTooLarge"));
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const uploaded: { path: string; mime: string; sizeBytes: number }[] = [];
+      for (const file of selected) {
+        const path = `${user.id}/${crypto.randomUUID()}.${fileExtension(file.name)}`;
+        const { error } = await supabase.storage.from("uploads").upload(path, file, {
+          contentType: file.type,
+        });
+        if (error) {
+          toast.error(t("uploadErrorGeneric"));
+          return;
+        }
+        uploaded.push({ path, mime: file.type, sizeBytes: file.size });
+      }
+
+      const res = await fetch("/api/works/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: uploadKind, files: uploaded }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(t(UPLOAD_ERROR_KEYS[data.error] ?? "uploadErrorGeneric"));
+        return;
+      }
+
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      setAddOpen(false);
+      await refreshWorks();
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -157,22 +242,69 @@ export function WorksManager({ initialWorks, plan }: { initialWorks: PublicWork[
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("addByLinks")}</DialogTitle>
+            <DialogTitle>{t("addWork")}</DialogTitle>
           </DialogHeader>
-          <Textarea
-            rows={6}
-            value={linksText}
-            onChange={(e) => setLinksText(e.target.value)}
-            placeholder="https://..."
-          />
-          <DialogFooter>
-            <Button variant="secondary" onClick={() => setAddOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddLinks} disabled={adding}>
-              {t("addWork")}
-            </Button>
-          </DialogFooter>
+          <Tabs defaultValue="link">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="link">{t("addByLinks")}</TabsTrigger>
+              <TabsTrigger value="upload">{t("uploadFile")}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="link" className="flex flex-col gap-3">
+              <Textarea
+                rows={6}
+                value={linksText}
+                onChange={(e) => setLinksText(e.target.value)}
+                placeholder="https://..."
+              />
+              <DialogFooter>
+                <Button variant="secondary" onClick={() => setAddOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleAddLinks} disabled={adding}>
+                  {t("addWork")}
+                </Button>
+              </DialogFooter>
+            </TabsContent>
+            <TabsContent value="upload" className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1.5">
+                <Label>{t("uploadKindLabel")}</Label>
+                <Select value={uploadKind} onValueChange={(v) => setUploadKind(v as UploadKind)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="image">{t("uploadKindImage")}</SelectItem>
+                    <SelectItem value="video" disabled={!limits.allowedUploadKinds.includes("video")}>
+                      {t("uploadKindVideo")}
+                      {!limits.allowedUploadKinds.includes("video") && ` (${t("proOnly")})`}
+                    </SelectItem>
+                    <SelectItem value="pdf" disabled={!limits.allowedUploadKinds.includes("pdf")}>
+                      {t("uploadKindPdf")}
+                      {!limits.allowedUploadKinds.includes("pdf") && ` (${t("proOnly")})`}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label>{t("chooseFiles")}</Label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept={ACCEPT_BY_KIND[uploadKind]}
+                  multiple={uploadKind === "image"}
+                  className="text-sm text-muted-foreground file:mr-3 file:rounded-lg file:border-0 file:bg-surface file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-foreground"
+                />
+              </div>
+              <DialogFooter>
+                <Button variant="secondary" onClick={() => setAddOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleUpload} disabled={uploading}>
+                  {uploading ? t("uploading") : t("upload")}
+                </Button>
+              </DialogFooter>
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
 

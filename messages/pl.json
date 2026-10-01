@@ -251,7 +251,19 @@
       "hide": "Ukryj",
       "unhide": "Pokaż",
       "refreshScreenshot": "Odśwież zrzut ekranu",
-      "usedOf": "{used} z {limit}"
+      "usedOf": "{used} z {limit}",
+      "uploadKindLabel": "Typ pliku",
+      "uploadKindImage": "Zdjęcie(a)",
+      "uploadKindVideo": "Wideo",
+      "uploadKindPdf": "PDF",
+      "chooseFiles": "Wybierz plik(i)",
+      "uploading": "Przesyłanie…",
+      "upload": "Prześlij",
+      "proOnly": "Tylko Pro",
+      "uploadErrorFileTooLarge": "Plik jest za duży dla Twojego planu",
+      "uploadErrorQuotaExceeded": "Wykorzystano limit miejsca",
+      "uploadErrorPlanKind": "Przejdź na Pro, aby przesyłać ten typ pliku",
+      "uploadErrorGeneric": "Przesyłanie nie powiodło się"
     },
     "profile": {
       "title": "Profil",
