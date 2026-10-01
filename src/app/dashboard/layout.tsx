@@ -4,11 +4,10 @@ import { headers } from "next/headers";
 
 import { MobileNav } from "@/components/dashboard/mobile-nav";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeLocaleControls } from "@/components/theme-locale-controls";
 import { Logo } from "@/components/logo";
 import { DEFAULT_LOCALE, isLocale } from "@/i18n/locales";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { getTranslations } from "next-intl/server";
 
 export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
   const supabase = await createSupabaseServerClient();
@@ -29,8 +28,6 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     .single();
 
   if (!profile?.onboarding_completed) redirect("/onboarding");
-
-  const tTheme = await getTranslations("dashboard.settings");
 
   return (
     <div className="flex min-h-screen">
@@ -55,9 +52,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
               vitrin.work/{profile.username}
             </Link>
           </div>
-          <ThemeToggle
-            labels={{ light: tTheme("themeLight"), dark: tTheme("themeDark"), system: tTheme("themeSystem") }}
-          />
+          <ThemeLocaleControls />
         </header>
         <main className="flex-1 p-6">{children}</main>
       </div>

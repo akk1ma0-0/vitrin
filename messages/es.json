@@ -268,7 +268,15 @@
     "stats": {
       "title": "Estadísticas",
       "upgradeForMore": "Actualiza a Pro para analíticas completas",
-      "totalViews": "Total de visitas al perfil"
+      "totalViews": "Total de visitas al perfil",
+      "dailyViewsTitle": "Visitas en 30 días",
+      "byWorkTitle": "Trabajos más vistos",
+      "sourcesTitle": "Fuentes de tráfico",
+      "countriesTitle": "Países",
+      "devicesTitle": "Dispositivos",
+      "noDataYet": "Aún no hay datos",
+      "direct": "Directo",
+      "unknown": "Desconocido"
     },
     "settings": {
       "title": "Ajustes",

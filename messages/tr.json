@@ -268,7 +268,15 @@
     "stats": {
       "title": "İstatistikler",
       "upgradeForMore": "Tam analiz için Pro'ya yükselt",
-      "totalViews": "Toplam profil görüntülenmesi"
+      "totalViews": "Toplam profil görüntülenmesi",
+      "dailyViewsTitle": "30 günlük görüntülenme",
+      "byWorkTitle": "En popüler işler",
+      "sourcesTitle": "Trafik kaynakları",
+      "countriesTitle": "Ülkeler",
+      "devicesTitle": "Cihazlar",
+      "noDataYet": "Henüz veri yok",
+      "direct": "Doğrudan",
+      "unknown": "Bilinmiyor"
     },
     "settings": {
       "title": "Ayarlar",

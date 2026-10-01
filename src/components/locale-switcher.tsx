@@ -10,20 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { LOCALES, type Locale } from "@/i18n/locales";
-
-const LOCALE_LABELS: Record<Locale, string> = {
-  en: "English",
-  es: "Español",
-  "pt-BR": "Português (BR)",
-  ru: "Русский",
-  ro: "Română",
-  de: "Deutsch",
-  fr: "Français",
-  tr: "Türkçe",
-  uk: "Українська",
-  pl: "Polski",
-};
+import { LOCALE_LABELS, LOCALES, type Locale } from "@/i18n/locales";
 
 /** Only for marketing pages under `[handle]`, where the current handle *is* the locale. */
 export function LocaleSwitcher({ current }: { current: Locale }) {

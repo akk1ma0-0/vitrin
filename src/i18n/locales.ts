@@ -11,6 +11,20 @@ export type Locale = (typeof LOCALES)[number];
 
 export const DEFAULT_LOCALE: Locale = "en";
 
+/** Each locale's own name, for the locale switcher's menu — never translated into the viewer's current language. */
+export const LOCALE_LABELS: Record<Locale, string> = {
+  en: "English",
+  es: "Español",
+  "pt-BR": "Português (BR)",
+  ru: "Русский",
+  ro: "Română",
+  de: "Deutsch",
+  fr: "Français",
+  tr: "Türkçe",
+  uk: "Українська",
+  pl: "Polski",
+};
+
 const LOCALE_SET = new Set<string>(LOCALES.map((l) => l.toLowerCase()));
 
 export function isLocale(value: string): value is Locale {

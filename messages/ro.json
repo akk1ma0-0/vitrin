@@ -268,7 +268,15 @@
     "stats": {
       "title": "Statistici",
       "upgradeForMore": "Fă upgrade la Pro pentru statistici complete",
-      "totalViews": "Total vizualizări de profil"
+      "totalViews": "Total vizualizări de profil",
+      "dailyViewsTitle": "Vizualizări în 30 de zile",
+      "byWorkTitle": "Cele mai populare lucrări",
+      "sourcesTitle": "Surse de trafic",
+      "countriesTitle": "Țări",
+      "devicesTitle": "Dispozitive",
+      "noDataYet": "Încă nu există date",
+      "direct": "Direct",
+      "unknown": "Necunoscut"
     },
     "settings": {
       "title": "Setări",

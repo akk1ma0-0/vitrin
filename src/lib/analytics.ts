@@ -29,6 +29,11 @@ export function getDeviceType(userAgent: string): DeviceType {
   return "desktop";
 }
 
+/** Vercel sets this header at the edge for every request; null off-Vercel (e.g. local dev). */
+export function getCountry(headers: Headers): string | null {
+  return headers.get("x-vercel-ip-country");
+}
+
 export function getReferrerHost(referrer: string | null): string | null {
   if (!referrer) return null;
   try {

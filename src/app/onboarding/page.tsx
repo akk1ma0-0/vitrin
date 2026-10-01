@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 
 import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard";
+import { ThemeLocaleControls } from "@/components/theme-locale-controls";
 import { DEFAULT_LOCALE, isLocale } from "@/i18n/locales";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -26,5 +27,12 @@ export default async function OnboardingPage() {
 
   if (profile?.onboarding_completed) redirect("/dashboard");
 
-  return <OnboardingWizard initialEmail={user.email ?? ""} />;
+  return (
+    <>
+      <div className="fixed right-4 top-4 z-10">
+        <ThemeLocaleControls />
+      </div>
+      <OnboardingWizard initialEmail={user.email ?? ""} />
+    </>
+  );
 }

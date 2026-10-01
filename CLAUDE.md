@@ -57,9 +57,23 @@ Built:
   moderated, emailed via Resend), report flow, pricing, legal pages
   (Terms/Privacy/Refund).
 - Dashboard: overview (stats, checklist, recent requests), works CRUD with
-  drag-and-drop reordering, profile editor, inbox, settings (theme, Pro
-  accent color, language, GDPR export/delete), billing (plan display; no
-  Paddle checkout yet — stage 2).
+  drag-and-drop reordering, profile editor, inbox, full stats (see below),
+  settings (theme, Pro accent color, language, GDPR export/delete),
+  billing (plan display; no Paddle checkout yet — stage 2).
+- Full stats (`dashboard/stats/page.tsx`, `getFullStats()` in
+  `src/lib/dashboard.ts`, spec section 8's "full statistics" Pro row): a
+  30-day daily-views bar chart, top works, traffic sources, countries, and
+  a device split — aggregated in JS from raw `events` rows (fine at a
+  freelancer portfolio's event volume; no `GROUP BY` RPC needed). The
+  7-day/total-views tiles above it stay visible on every plan (unchanged);
+  only these five breakdowns are Pro-gated, each via `StatSection`
+  (`src/components/dashboard/stat-section.tsx`): Free sees the section's
+  name dimmed and a centered "Pro" badge, never the numbers — not even
+  blurred. `getCountry()` (`src/lib/analytics.ts`, reads Vercel's
+  `x-vercel-ip-country` edge header) started actually populating
+  `events.country`; that column existed since `0006_events.sql` but
+  nothing wrote to it before now, so older rows have `country = null`
+  ("Unknown" in the breakdown).
 - Admin moderation queue (flagged works + open reports, with
   approve/hide/delete/ban actions logged to `moderation_log`).
 - SEO: sitemap.xml, robots.txt, dynamic OG images, JSON-LD on profiles.
@@ -257,6 +271,34 @@ every request (the standard `@supabase/ssr` middleware pattern).
   other genuinely service-role connection. `/admin` itself just checks
   `role = 'admin'` in `admin/layout.tsx` and redirects to `/dashboard`
   otherwise — there's no link to it anywhere in the UI by design.
+- Theme + language controls (`ThemeLocaleControls`,
+  `src/components/theme-locale-controls.tsx`) are on every page now, not
+  just the `[handle]` marketing tree (which gets them via `SiteHeader`):
+  dashboard, admin, onboarding, and the public profile page all render it
+  directly. It wraps `ThemeToggle` with `CookieLocaleSwitcher`
+  (`src/components/cookie-locale-switcher.tsx`), **not** the marketing
+  `LocaleSwitcher` — that one rewrites the URL's first path segment, which
+  only makes sense where that segment *is* the locale (`/{locale}/...`).
+  Everywhere else (no locale in the URL at all, or — on a profile page —
+  that segment is the username) it instead sets the `NEXT_LOCALE` cookie
+  `src/proxy.ts` already reads and calls `router.refresh()`. Note: the
+  public profile page visitor's theme is meant to follow the *owner's*
+  chosen `profiles.theme` per spec section 3 — that was never actually
+  wired up (the column is written but never read back), so every visitor
+  already got their own system theme before this change; adding the
+  toggle just makes that pre-existing behavior an explicit control instead
+  of a silent one. Fixing the owner-controls-visitor-theme spec gap is a
+  separate, not-yet-scheduled piece of work.
+- If `react-hooks/immutability` (the React Compiler ESLint rule) flags a
+  global mutation like `document.cookie = ...` inside a component with
+  "Modifying a variable defined outside a component or hook is not
+  allowed" — even though it's a plain browser global, not real component
+  state — move the assignment into a plain function declared at module
+  scope (outside the component) and call that instead. The compiler's
+  static analysis traces mutations within component/hook bodies but
+  doesn't trace into an ordinary external function call, so this reliably
+  clears the false positive (see `setLocaleCookie()` in
+  `cookie-locale-switcher.tsx`).
 
 ## What the owner still needs to provide
 

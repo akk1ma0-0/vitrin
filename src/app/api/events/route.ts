@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
-import { computeVisitorHash, getClientIp, getDeviceType, getReferrerHost } from "@/lib/analytics";
+import { computeVisitorHash, getClientIp, getCountry, getDeviceType, getReferrerHost } from "@/lib/analytics";
 import { createSupabaseServerClient, createSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
 const eventSchema = z.object({
@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
       contact_type: contactType ?? null,
       visitor_hash: computeVisitorHash(ip, userAgent),
       referrer_host: getReferrerHost(request.headers.get("referer")),
+      country: getCountry(request.headers),
       device: getDeviceType(userAgent),
     });
 

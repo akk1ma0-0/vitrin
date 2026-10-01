@@ -268,7 +268,15 @@
     "stats": {
       "title": "Statystyki",
       "upgradeForMore": "Przejdź na Pro, aby uzyskać pełną analitykę",
-      "totalViews": "Łączna liczba wyświetleń profilu"
+      "totalViews": "Łączna liczba wyświetleń profilu",
+      "dailyViewsTitle": "Wyświetlenia w ciągu 30 dni",
+      "byWorkTitle": "Najpopularniejsze prace",
+      "sourcesTitle": "Źródła ruchu",
+      "countriesTitle": "Kraje",
+      "devicesTitle": "Urządzenia",
+      "noDataYet": "Brak danych",
+      "direct": "Bezpośrednie",
+      "unknown": "Nieznane"
     },
     "settings": {
       "title": "Ustawienia",

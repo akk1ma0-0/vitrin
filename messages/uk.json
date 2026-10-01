@@ -268,7 +268,15 @@
     "stats": {
       "title": "Статистика",
       "upgradeForMore": "Перейдіть на Pro для повної аналітики",
-      "totalViews": "Усього переглядів профілю"
+      "totalViews": "Усього переглядів профілю",
+      "dailyViewsTitle": "Перегляди за 30 днів",
+      "byWorkTitle": "Популярні роботи",
+      "sourcesTitle": "Джерела трафіку",
+      "countriesTitle": "Країни",
+      "devicesTitle": "Пристрої",
+      "noDataYet": "Поки немає даних",
+      "direct": "Прямі переходи",
+      "unknown": "Невідомо"
     },
     "settings": {
       "title": "Налаштування",

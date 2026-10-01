@@ -12,6 +12,7 @@ import { WorkViewer } from "@/components/portfolio/work-viewer";
 import { HireForm } from "@/components/portfolio/hire-form";
 import { ReportDialog } from "@/components/portfolio/report-dialog";
 import { Logo } from "@/components/logo";
+import { ThemeLocaleControls } from "@/components/theme-locale-controls";
 import type { PublicProfile, PublicWork } from "@/lib/profiles";
 
 export function PublicProfileView({
@@ -63,10 +64,11 @@ export function PublicProfileView({
 
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="flex items-center border-b border-border px-4 py-3">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <Link href="/">
           <Logo />
         </Link>
+        <ThemeLocaleControls />
       </div>
       {isOwner && (
         <div className="flex items-center justify-between gap-2 border-b border-border bg-surface px-4 py-2 text-sm">

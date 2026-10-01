@@ -23,22 +23,9 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ACCENT_COLORS } from "@/lib/accent-colors";
-import { LOCALES, type Locale } from "@/i18n/locales";
+import { LOCALE_LABELS, LOCALES, type Locale } from "@/i18n/locales";
 import type { PublicProfile } from "@/lib/profiles";
 import { cn } from "@/lib/utils";
-
-const LOCALE_LABELS: Record<Locale, string> = {
-  en: "English",
-  es: "Español",
-  "pt-BR": "Português (BR)",
-  ru: "Русский",
-  ro: "Română",
-  de: "Deutsch",
-  fr: "Français",
-  tr: "Türkçe",
-  uk: "Українська",
-  pl: "Polski",
-};
 
 export function SettingsView({ profile }: { profile: PublicProfile }) {
   const t = useTranslations("dashboard.settings");

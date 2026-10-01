@@ -268,7 +268,15 @@
     "stats": {
       "title": "Stats",
       "upgradeForMore": "Upgrade to Pro for full analytics",
-      "totalViews": "Total profile views"
+      "totalViews": "Total profile views",
+      "dailyViewsTitle": "Views over time (30 days)",
+      "byWorkTitle": "Top works",
+      "sourcesTitle": "Traffic sources",
+      "countriesTitle": "Countries",
+      "devicesTitle": "Devices",
+      "noDataYet": "No data yet",
+      "direct": "Direct",
+      "unknown": "Unknown"
     },
     "settings": {
       "title": "Settings",
