@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "@/components/auth/google-icon";
+import { FacebookIcon } from "@/components/auth/facebook-icon";
+import { TelegramLoginButton } from "@/components/auth/telegram-login-button";
 import { Turnstile } from "@/components/turnstile";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { Locale } from "@/i18n/locales";
 
-export function SignupForm({ locale }: { locale: Locale }) {
+export function SignupForm({ locale, telegramBotUsername }: { locale: Locale; telegramBotUsername: string | null }) {
   const t = useTranslations("auth");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,6 +27,14 @@ export function SignupForm({ locale }: { locale: Locale }) {
     const supabase = createSupabaseBrowserClient();
     await supabase.auth.signInWithOAuth({
       provider: "google",
+      options: { redirectTo: `${window.location.origin}/api/auth/callback?next=/onboarding` },
+    });
+  }
+
+  async function handleFacebook() {
+    const supabase = createSupabaseBrowserClient();
+    await supabase.auth.signInWithOAuth({
+      provider: "facebook",
       options: { redirectTo: `${window.location.origin}/api/auth/callback?next=/onboarding` },
     });
   }
@@ -68,6 +78,13 @@ export function SignupForm({ locale }: { locale: Locale }) {
         <GoogleIcon className="h-4 w-4" />
         {t("continueWithGoogle")}
       </Button>
+
+      <Button variant="secondary" onClick={handleFacebook} className="gap-2">
+        <FacebookIcon className="h-4 w-4" />
+        {t("continueWithFacebook")}
+      </Button>
+
+      {telegramBotUsername && <TelegramLoginButton botUsername={telegramBotUsername} next="/onboarding" />}
 
       <div className="flex items-center gap-3 text-xs text-muted-foreground">
         <div className="h-px flex-1 bg-border" />

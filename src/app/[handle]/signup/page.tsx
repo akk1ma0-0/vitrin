@@ -6,5 +6,5 @@ export default async function SignupPage({ params }: PageProps<"/[handle]/signup
   const { handle } = await params;
   const locale = assertLocaleHandle(handle);
   await redirectIfAuthenticated();
-  return <SignupForm locale={locale} />;
+  return <SignupForm locale={locale} telegramBotUsername={process.env.TELEGRAM_BOT_USERNAME ?? null} />;
 }

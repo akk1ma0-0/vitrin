@@ -104,8 +104,9 @@ Built:
   a signed-in visitor sees a plain "Freelancers" heading instead, since
   the "create my page" pitch doesn't apply to them.
 
-Deliberately deferred to stage 2 per the spec's own plan: Paddle billing,
-Facebook/Telegram login, upload_video/upload_pdf adapters.
+Deliberately deferred to stage 2 per the spec's own plan: Paddle billing.
+Facebook/Telegram login and the upload_video/upload_pdf adapters were also
+on that list but are now built — see further down.
 
 Notion/Behance/Dribbble/Telegram-post source detection (`detectSource()`
 in `src/lib/ingest/detect-source.ts`) was already fully built — those 4
@@ -163,6 +164,57 @@ account, which is a higher bar than an IP-based limit adds. Note: the
 spec's own security table (section 7) also wants Turnstile on login, not
 just a rate limit — login has neither today beyond this new limiter;
 signup already has Turnstile.
+
+Direct file upload (image/video/pdf) is built: the `uploads` storage
+bucket, its folder-scoped RLS, the `work_files` table, and
+`canUploadFile()`/`PLAN_LIMITS` in `src/lib/plans.ts` already existed from
+stage 1 prep — what was missing was the actual wiring. The browser uploads
+straight to Supabase Storage via `createSupabaseBrowserClient()`
+(`WorksManager`'s upload tab, `src/components/dashboard/works-manager.tsx`),
+then `POST /api/works/upload` validates plan limits server-side (work
+count, per-file size, running storage total) and creates the `works` +
+`work_files` rows — it never receives the file bytes itself. Free plan only
+allows `image` (multiple per work, stored as `meta.images`, rendered as a
+gallery); Pro additionally allows a single `video` or `pdf` file per work.
+`cover_url` is only ever set to an actual image: an image upload's own
+first file, or left `null` for video/pdf (the raw file URL isn't a valid
+`<Image>` src), falling back to the `SourceTypeIcon` placeholder in
+`WorkRow`. `WorkViewer` renders an uploaded video with a plain native
+`<video>` element (`render_mode === "video" && source_type ===
+"upload_video"`) rather than `EmbedFrame`, since there's no embed URL for a
+direct file.
+
+Facebook login is a second `supabase.auth.signInWithOAuth({ provider:
+"facebook" })` button next to the existing Google one, in both
+`login-form.tsx` and `signup-form.tsx` — same OAuth code-exchange flow via
+`/api/auth/callback`, so it needed no new server code. It only works once
+the owner creates a Facebook App and configures the Facebook provider in
+Supabase Auth (same caveat as Google, spec section 16) — see "What the
+owner still needs to provide" below.
+
+Telegram login works differently because Supabase Auth has no native
+Telegram provider. The login/signup pages render Telegram's own Login
+Widget (`TelegramLoginButton`, `src/components/auth/telegram-login-button.tsx`
+— the widget script is appended imperatively in a `useEffect` since it
+mounts its own iframe relative to `document.currentScript`, which plain
+JSX can't guarantee) in redirect mode: Telegram signs the user's data and
+navigates the browser to `data-auth-url` (`/api/auth/telegram`) instead of
+calling a JS callback, so verification happens entirely server-side.
+`verifyTelegramAuth()` (`src/lib/auth/telegram.ts`) re-derives the HMAC
+per Telegram's own spec and rejects a stale `auth_date` (>24h). The route
+then maps the Telegram account to a Supabase user via a deterministic
+synthetic email (`telegram-{id}@users.vitrin.work`) and
+`profiles.telegram_id` (`0015_telegram_auth.sql`): `generateLink({ type:
+"magiclink", email })` creates that user on first login (Supabase does
+this automatically for `magiclink`) or resolves to the existing one, and
+the returned `hashed_token` is immediately verified server-side
+(`supabase.auth.verifyOtp`) to set session cookies — the user never sees
+an email or clicks a link. Needs `TELEGRAM_BOT_TOKEN` (HMAC secret,
+server-only) and `TELEGRAM_BOT_USERNAME` (public, passed to the widget as
+a prop from the login/signup Server Components) from a bot registered via
+BotFather; the button simply doesn't render when
+`TELEGRAM_BOT_USERNAME` is unset, same graceful-degradation pattern as the
+other optional services.
 
 ## Stack
 
@@ -385,7 +437,16 @@ to get sign-up through to a working portfolio page. Deploy target is
 Vercel, project connected to this repo's default branch
 (`claude/wizardly-thompson-5t1u1c`). Also needed eventually: Paddle
 sandbox → live account (stage 2) and the domain `vitrin.work` with DNS
-access — a Vercel-assigned subdomain is fine for testing.
+access — a Vercel-assigned subdomain is fine for testing. Facebook and
+Telegram login are also optional in this sense — the buttons simply don't
+render (Telegram) or fail at click-time with Supabase returning a
+provider-not-enabled error (Facebook) until configured: Facebook needs a
+Facebook App (facebook login product enabled) with its App ID/secret
+entered into Supabase Auth's Facebook provider settings; Telegram needs a
+bot registered via [@BotFather](https://t.me/BotFather) (`/newbot`, then
+`/setdomain` pointed at `vitrin.work` — Telegram's widget refuses to load
+on an unregistered domain) with `TELEGRAM_BOT_TOKEN` and
+`TELEGRAM_BOT_USERNAME` set in the environment.
 
 ## Commands
 

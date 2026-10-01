@@ -119,6 +119,7 @@
     "usernameLabel": "Username",
     "passwordLabel": "Пароль",
     "continueWithGoogle": "Продолжить с Google",
+    "continueWithFacebook": "Продолжить с Facebook",
     "continueWithEmail": "Продолжить с email",
     "orDivider": "или",
     "magicLinkSent": "Проверьте почту — мы отправили ссылку для входа",

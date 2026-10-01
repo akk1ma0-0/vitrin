@@ -37,6 +37,8 @@ export interface Database {
           onboarding_completed: boolean;
           created_at: string;
           updated_at: string;
+          /** Telegram Login Widget linkage (0015_telegram_auth.sql). */
+          telegram_id: number | null;
           /** Generated column (0013_catalog_search.sql) — never written to directly. */
           search_vector: string;
         };

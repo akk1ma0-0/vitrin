@@ -119,6 +119,7 @@
     "usernameLabel": "Nom d'utilisateur",
     "passwordLabel": "Mot de passe",
     "continueWithGoogle": "Continuer avec Google",
+    "continueWithFacebook": "Continuer avec Facebook",
     "continueWithEmail": "Continuer avec l'email",
     "orDivider": "ou",
     "magicLinkSent": "Consultez votre email pour le lien de connexion",
