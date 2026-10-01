@@ -339,6 +339,7 @@
       "accentColor": "Color de acento",
       "accentColorPro": "Actualiza a Pro para elegir tu propio color de acento",
       "language": "Idioma de la interfaz",
+      "logOut": "Cerrar sesión",
       "deleteAccount": "Eliminar cuenta",
       "deleteAccountWarning": "Esto elimina permanentemente tu página y todos tus datos.",
       "exportData": "Exportar mis datos"

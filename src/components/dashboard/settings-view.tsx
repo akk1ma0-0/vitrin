@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { ACCENT_COLORS } from "@/lib/accent-colors";
 import { LOCALE_LABELS, LOCALES, type Locale } from "@/i18n/locales";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { PublicProfile } from "@/lib/profiles";
 import { cn } from "@/lib/utils";
 
@@ -57,6 +58,13 @@ export function SettingsView({ profile }: { profile: PublicProfile }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ uiLocale: locale }),
     });
+    router.refresh();
+  }
+
+  async function handleLogout() {
+    const supabase = createSupabaseBrowserClient();
+    await supabase.auth.signOut();
+    router.push("/");
     router.refresh();
   }
 
@@ -138,6 +146,13 @@ export function SettingsView({ profile }: { profile: PublicProfile }) {
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="flex items-center justify-between rounded-xl border border-border p-4">
+        <span className="text-sm font-medium">{t("logOut")}</span>
+        <Button variant="secondary" onClick={handleLogout}>
+          {t("logOut")}
+        </Button>
       </div>
 
       <div className="flex items-center justify-between rounded-xl border border-border p-4">

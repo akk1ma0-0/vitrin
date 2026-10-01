@@ -339,6 +339,7 @@
       "accentColor": "Akzentfarbe",
       "accentColorPro": "Upgrade auf Pro, um deine eigene Akzentfarbe zu wählen",
       "language": "Sprache der Oberfläche",
+      "logOut": "Abmelden",
       "deleteAccount": "Konto löschen",
       "deleteAccountWarning": "Dies löscht deine Seite und alle Daten dauerhaft.",
       "exportData": "Meine Daten exportieren"

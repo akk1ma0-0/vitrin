@@ -339,6 +339,7 @@
       "accentColor": "Cor de destaque",
       "accentColorPro": "Faça upgrade para Pro para escolher sua própria cor de destaque",
       "language": "Idioma da interface",
+      "logOut": "Sair",
       "deleteAccount": "Excluir conta",
       "deleteAccountWarning": "Isso exclui permanentemente sua página e todos os seus dados.",
       "exportData": "Exportar meus dados"

@@ -339,6 +339,7 @@
       "accentColor": "Vurgu rengi",
       "accentColorPro": "Kendi vurgu rengini seçmek için Pro'ya yükselt",
       "language": "Arayüz dili",
+      "logOut": "Çıkış yap",
       "deleteAccount": "Hesabı sil",
       "deleteAccountWarning": "Bu, sayfanı ve tüm verilerini kalıcı olarak siler.",
       "exportData": "Verilerimi dışa aktar"
