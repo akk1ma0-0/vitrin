@@ -274,21 +274,41 @@ every request (the standard `@supabase/ssr` middleware pattern).
 - Theme + language controls (`ThemeLocaleControls`,
   `src/components/theme-locale-controls.tsx`) are on every page now, not
   just the `[handle]` marketing tree (which gets them via `SiteHeader`):
-  dashboard, admin, onboarding, and the public profile page all render it
-  directly. It wraps `ThemeToggle` with `CookieLocaleSwitcher`
+  dashboard, admin, and onboarding all render it directly. It wraps
+  `ThemeToggle` with `CookieLocaleSwitcher`
   (`src/components/cookie-locale-switcher.tsx`), **not** the marketing
   `LocaleSwitcher` — that one rewrites the URL's first path segment, which
   only makes sense where that segment *is* the locale (`/{locale}/...`).
   Everywhere else (no locale in the URL at all, or — on a profile page —
   that segment is the username) it instead sets the `NEXT_LOCALE` cookie
-  `src/proxy.ts` already reads and calls `router.refresh()`. Note: the
-  public profile page visitor's theme is meant to follow the *owner's*
-  chosen `profiles.theme` per spec section 3 — that was never actually
-  wired up (the column is written but never read back), so every visitor
-  already got their own system theme before this change; adding the
-  toggle just makes that pre-existing behavior an explicit control instead
-  of a silent one. Fixing the owner-controls-visitor-theme spec gap is a
-  separate, not-yet-scheduled piece of work.
+  `src/proxy.ts` already reads and calls `router.refresh()`.
+- The public profile page is the one exception to `ThemeLocaleControls`:
+  it needs `profiles.theme` (the owner's choice, spec section 3) as the
+  *default* appearance, with a per-visitor opt-out — a plain global toggle
+  doesn't fit that. `PublicProfileView` resolves both an owner theme and a
+  visitor theme (`useTheme()`'s `resolvedTheme`, i.e. their normal
+  site-wide preference) and picks one based on local `useOwnerTheme`
+  state (default `true`), applying it via `data-theme` on the page's own
+  root div rather than the `<html>` element `next-themes` controls
+  globally. This works because `globals.css`'s dark-mode variable block is
+  `[data-theme="dark"]`, not `:root[data-theme="dark"]` — custom
+  properties inherit down the DOM, so any element carrying the attribute
+  re-themes its own subtree independent of `<html>`'s. The three dialogs
+  that live on this page (`WorkViewer`, `HireForm`, `ReportDialog`) take a
+  `portalContainer` prop for the same reason: Radix's `Dialog.Portal`
+  defaults to `document.body`, which sits outside that themed div, so
+  without pointing it at the div explicitly those modals would silently
+  fall back to the visitor's own site-wide theme instead of whichever one
+  is currently active on the page. `DialogContent`
+  (`src/components/ui/dialog.tsx`) now accepts an optional `container`
+  prop for exactly this; every other dialog in the app omits it and keeps
+  portaling to `document.body` as before. `profile.theme === "system"`
+  resolves against the *visitor's* `prefers-color-scheme` (the owner's own
+  device state isn't knowable at render time) via `useSyncExternalStore`
+  — not a `useEffect` + `setState`, which the React Compiler ESLint rule
+  (`react-hooks/set-state-in-effect`) flags as an anti-pattern, and which
+  `useSyncExternalStore` is the actual correct tool for anyway (subscribing
+  to an external, changing-over-time browser API).
 - If `react-hooks/immutability` (the React Compiler ESLint rule) flags a
   global mutation like `document.cookie = ...` inside a component with
   "Modifying a variable defined outside a component or hook is not

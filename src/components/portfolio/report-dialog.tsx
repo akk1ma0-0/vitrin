@@ -29,9 +29,11 @@ const REASONS = ["spam", "nsfw", "scam", "copyright", "offensive", "other"] as c
 export function ReportDialog({
   targetType,
   targetId,
+  portalContainer,
 }: {
   targetType: "profile" | "work";
   targetId: string;
+  portalContainer?: HTMLElement | null;
 }) {
   const t = useTranslations("report");
   const [open, setOpen] = useState(false);
@@ -60,7 +62,7 @@ export function ReportDialog({
           {t("button")}
         </button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent container={portalContainer} className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
         </DialogHeader>

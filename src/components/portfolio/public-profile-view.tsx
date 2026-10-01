@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { useTranslations } from "next-intl";
 import { ArrowRight } from "lucide-react";
 
@@ -12,8 +13,24 @@ import { WorkViewer } from "@/components/portfolio/work-viewer";
 import { HireForm } from "@/components/portfolio/hire-form";
 import { ReportDialog } from "@/components/portfolio/report-dialog";
 import { Logo } from "@/components/logo";
-import { ThemeLocaleControls } from "@/components/theme-locale-controls";
+import { CookieLocaleSwitcher } from "@/components/cookie-locale-switcher";
+import { Button } from "@/components/ui/button";
 import type { PublicProfile, PublicWork } from "@/lib/profiles";
+
+function subscribeToColorScheme(callback: () => void): () => void {
+  const query = window.matchMedia("(prefers-color-scheme: dark)");
+  query.addEventListener("change", callback);
+  return () => query.removeEventListener("change", callback);
+}
+
+function getPrefersDarkSnapshot(): boolean {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+/** Resolves "system" the way the *viewer's own device* currently sees it — the only "system" available at render time. */
+function useSystemPrefersDark(): boolean {
+  return useSyncExternalStore(subscribeToColorScheme, getPrefersDarkSnapshot, () => false);
+}
 
 export function PublicProfileView({
   profile,
@@ -34,6 +51,19 @@ export function PublicProfileView({
   const [openWorkId, setOpenWorkId] = useState<string | null>(initialOpenWorkId);
   const [hireForWork, setHireForWork] = useState<PublicWork | undefined>(undefined);
   const [hireOpen, setHireOpen] = useState(false);
+  // Dialogs portal into this node instead of document.body, so they pick up
+  // the owner/visitor theme set below instead of the page-wide one on <html>.
+  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
+
+  // Spec section 3: a visitor sees the theme the *owner* picked, not their
+  // own — with an opt-out back to their own site-wide theme.
+  const [useOwnerTheme, setUseOwnerTheme] = useState(true);
+  const { resolvedTheme: visitorTheme } = useTheme();
+  const systemPrefersDark = useSystemPrefersDark();
+  const ownerResolvedTheme: "light" | "dark" =
+    profile.theme === "system" ? (systemPrefersDark ? "dark" : "light") : profile.theme;
+  const visitorResolvedTheme: "light" | "dark" = visitorTheme === "dark" ? "dark" : "light";
+  const pageTheme = useOwnerTheme ? ownerResolvedTheme : visitorResolvedTheme;
 
   useEffect(() => {
     void fetch("/api/events", {
@@ -63,12 +93,21 @@ export function PublicProfileView({
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div
+      ref={setPortalContainer}
+      data-theme={pageTheme}
+      className="flex min-h-screen flex-col bg-background text-foreground"
+    >
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <Link href="/">
           <Logo />
         </Link>
-        <ThemeLocaleControls />
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={() => setUseOwnerTheme((v) => !v)}>
+            {useOwnerTheme ? tProfile("useMyTheme") : tProfile("useOwnerTheme")}
+          </Button>
+          <CookieLocaleSwitcher />
+        </div>
       </div>
       {isOwner && (
         <div className="flex items-center justify-between gap-2 border-b border-border bg-surface px-4 py-2 text-sm">
@@ -96,6 +135,7 @@ export function PublicProfileView({
         onClose={closeViewer}
         onNavigate={openWork}
         onHireClick={(work) => openHireForm(work)}
+        portalContainer={portalContainer}
       />
 
       <HireForm
@@ -103,6 +143,7 @@ export function PublicProfileView({
         onOpenChange={setHireOpen}
         profileId={profile.id}
         workId={hireForWork?.id}
+        portalContainer={portalContainer}
       />
 
       <footer className="border-t border-border py-8">
@@ -119,7 +160,7 @@ export function PublicProfileView({
               <ArrowRight className="h-3 w-3" />
             </span>
           </Link>
-          <ReportDialog targetType="profile" targetId={profile.id} />
+          <ReportDialog targetType="profile" targetId={profile.id} portalContainer={portalContainer} />
         </div>
       </footer>
     </div>

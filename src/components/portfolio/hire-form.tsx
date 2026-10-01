@@ -25,11 +25,13 @@ export function HireForm({
   onOpenChange,
   profileId,
   workId,
+  portalContainer,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   profileId: string;
   workId?: string;
+  portalContainer?: HTMLElement | null;
 }) {
   const t = useTranslations("hireForm");
   const locale = useLocale();
@@ -75,7 +77,7 @@ export function HireForm({
         }
       }}
     >
-      <DialogContent className="sm:max-w-md">
+      <DialogContent container={portalContainer} className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>{t("subtitle")}</DialogDescription>

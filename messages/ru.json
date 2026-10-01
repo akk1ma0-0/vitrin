@@ -164,7 +164,9 @@
     "expand": "Развернуть",
     "visitSite": "Перейти",
     "ownerBar": "Вы просматриваете свою публичную страницу",
-    "goToDashboard": "В личный кабинет"
+    "goToDashboard": "В личный кабинет",
+    "useMyTheme": "Моя тема",
+    "useOwnerTheme": "Тема владельца"
   },
   "viewer": {
     "openOriginal": "Открыть оригинал",

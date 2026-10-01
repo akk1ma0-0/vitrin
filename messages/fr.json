@@ -164,7 +164,9 @@
     "expand": "Agrandir",
     "visitSite": "Visiter",
     "ownerBar": "Vous consultez votre page publique",
-    "goToDashboard": "Aller au tableau de bord"
+    "goToDashboard": "Aller au tableau de bord",
+    "useMyTheme": "Utiliser mon thème",
+    "useOwnerTheme": "Utiliser le thème du propriétaire"
   },
   "viewer": {
     "openOriginal": "Ouvrir l'original",

@@ -23,12 +23,14 @@ export function WorkViewer({
   onClose,
   onNavigate,
   onHireClick,
+  portalContainer,
 }: {
   works: PublicWork[];
   openWorkId: string | null;
   onClose: () => void;
   onNavigate: (workId: string) => void;
   onHireClick: (work: PublicWork) => void;
+  portalContainer?: HTMLElement | null;
 }) {
   const t = useTranslations("viewer");
   const [device, setDevice] = useState<DeviceKey>("desktop");
@@ -99,6 +101,7 @@ export function WorkViewer({
     <Dialog open={Boolean(work)} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         hideClose
+        container={portalContainer}
         className="flex h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-6xl flex-col gap-0 overflow-hidden p-0 sm:h-[calc(100vh-3rem)]"
       >
         <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">

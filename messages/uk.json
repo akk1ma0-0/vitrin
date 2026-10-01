@@ -164,7 +164,9 @@
     "expand": "Розгорнути",
     "visitSite": "Перейти",
     "ownerBar": "Ви переглядаєте свою публічну сторінку",
-    "goToDashboard": "До кабінету"
+    "goToDashboard": "До кабінету",
+    "useMyTheme": "Моя тема",
+    "useOwnerTheme": "Тема власника"
   },
   "viewer": {
     "openOriginal": "Відкрити оригінал",

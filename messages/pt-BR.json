@@ -164,7 +164,9 @@
     "expand": "Expandir",
     "visitSite": "Visitar",
     "ownerBar": "Você está vendo sua página pública",
-    "goToDashboard": "Ir para o painel"
+    "goToDashboard": "Ir para o painel",
+    "useMyTheme": "Usar meu tema",
+    "useOwnerTheme": "Usar o tema do dono"
   },
   "viewer": {
     "openOriginal": "Abrir original",

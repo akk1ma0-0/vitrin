@@ -164,7 +164,9 @@
     "expand": "Rozwiń",
     "visitSite": "Odwiedź",
     "ownerBar": "Przeglądasz swoją publiczną stronę",
-    "goToDashboard": "Przejdź do panelu"
+    "goToDashboard": "Przejdź do panelu",
+    "useMyTheme": "Użyj mojego motywu",
+    "useOwnerTheme": "Użyj motywu właściciela"
   },
   "viewer": {
     "openOriginal": "Otwórz oryginał",

@@ -164,7 +164,9 @@
     "expand": "Genişlet",
     "visitSite": "Ziyaret et",
     "ownerBar": "Herkese açık sayfanı görüntülüyorsun",
-    "goToDashboard": "Panele git"
+    "goToDashboard": "Panele git",
+    "useMyTheme": "Kendi temamı kullan",
+    "useOwnerTheme": "Sahibinin temasını kullan"
   },
   "viewer": {
     "openOriginal": "Orijinali aç",

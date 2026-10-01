@@ -164,7 +164,9 @@
     "expand": "Erweitern",
     "visitSite": "Besuchen",
     "ownerBar": "Du siehst deine öffentliche Seite",
-    "goToDashboard": "Zum Dashboard"
+    "goToDashboard": "Zum Dashboard",
+    "useMyTheme": "Mein Design verwenden",
+    "useOwnerTheme": "Design des Inhabers verwenden"
   },
   "viewer": {
     "openOriginal": "Original öffnen",

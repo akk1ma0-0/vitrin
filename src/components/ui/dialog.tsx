@@ -30,9 +30,11 @@ const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
     hideClose?: boolean;
+    /** Portals into this node instead of document.body — e.g. a themed wrapper that should stay in scope for the overlay/content too. */
+    container?: HTMLElement | null;
   }
->(({ className, children, hideClose, ...props }, ref) => (
-  <DialogPortal>
+>(({ className, children, hideClose, container, ...props }, ref) => (
+  <DialogPortal container={container}>
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}

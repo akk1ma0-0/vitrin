@@ -14,7 +14,17 @@
   --radius: 1rem;
 }
 
-:root[data-theme="dark"] {
+/*
+ * Deliberately NOT `:root[data-theme="dark"]` — `:root` (the <html>
+ * element) also matches this plain attribute selector, so the page-wide
+ * case still works, but so does any OTHER element carrying the attribute.
+ * Custom properties inherit down the DOM, so a wrapper div with
+ * data-theme="dark" re-themes everything under it independent of <html>'s
+ * own attribute — used by the public profile page to show the portfolio
+ * owner's chosen theme regardless of the visitor's site-wide preference
+ * (spec section 3), without a second, page-wide theme system.
+ */
+[data-theme="dark"] {
   --background: #000000;
   --surface: #111111;
   --surface-hover: #1a1a1a;

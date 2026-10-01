@@ -164,7 +164,9 @@
     "expand": "Extinde",
     "visitSite": "Vizitează",
     "ownerBar": "Vizualizezi pagina ta publică",
-    "goToDashboard": "Mergi la panou"
+    "goToDashboard": "Mergi la panou",
+    "useMyTheme": "Folosește tema mea",
+    "useOwnerTheme": "Folosește tema proprietarului"
   },
   "viewer": {
     "openOriginal": "Deschide originalul",
