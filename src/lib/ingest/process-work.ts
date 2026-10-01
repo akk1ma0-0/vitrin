@@ -1,5 +1,6 @@
 import {
   buildGoogleDocEmbedUrl,
+  buildTelegramEmbedUrl,
   buildVideoEmbedUrl,
   detectSource,
   type RenderMode,
@@ -103,8 +104,19 @@ export async function processWork(workId: string): Promise<void> {
     embedUrl = buildVideoEmbedUrl(sourceType, url);
   } else if (sourceType === "google_doc" || sourceType === "google_slides") {
     embedUrl = buildGoogleDocEmbedUrl(sourceType, url);
+  } else if (sourceType === "telegram_post") {
+    // Telegram's own embeddable post widget — the plain post page blocks
+    // framing, so this is never the generic iframe-check branch below.
+    embedUrl = buildTelegramEmbedUrl(url);
+    if (!embedUrl) renderMode = "screenshot"; // malformed URL (e.g. just /channel, no post id)
+  } else if (sourceType === "dribbble") {
+    // Dribbble shots are image-first; the OG image fetched below (always
+    // trusted here since renderMode isn't "screenshot") is the shot's own
+    // preview image, which the gallery viewer shows as the cover. Skip the
+    // iframe-check entirely — Dribbble blocks framing anyway, and a
+    // screenshot of the page is a worse result than the shot image itself.
   } else {
-    // website, notion, behance, dribbble, telegram_post, other: check embeddability.
+    // website, notion, behance, other: check embeddability.
     try {
       const res = await safeIngestFetch(normalizedUrl, { method: "GET" });
       iframeAllowed = res.ok && isIframeAllowed(res.headers);

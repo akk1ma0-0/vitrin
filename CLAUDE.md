@@ -105,8 +105,26 @@ Built:
   the "create my page" pitch doesn't apply to them.
 
 Deliberately deferred to stage 2 per the spec's own plan: Paddle billing,
-Facebook/Telegram login, notion/telegram_post/behance/dribbble/
-upload_video/upload_pdf adapters.
+Facebook/Telegram login, upload_video/upload_pdf adapters.
+
+Notion/Behance/Dribbble/Telegram-post source detection (`detectSource()`
+in `src/lib/ingest/detect-source.ts`) was already fully built — those 4
+types, plus their DB enum values and `SOURCE_TYPE_ICONS` entries, existed
+from stage 1. What was missing was `processWork()` actually honoring
+their intended render mode instead of running them through the generic
+"website" iframe-check branch, which silently discarded it:
+- `telegram_post`: now builds `https://t.me/{channel}/{id}?embed=1`
+  (`buildTelegramEmbedUrl()`) — Telegram's own embeddable widget variant;
+  the plain post page blocks framing, so the generic branch always fell
+  back to a screenshot before this.
+- `dribbble`: now skips the iframe-check entirely and keeps
+  `render_mode = "gallery"` — Dribbble blocks framing too, and a shot's
+  OG image (already preferred as the cover whenever `render_mode !==
+  "screenshot"`) is a far better result than a screenshot of the page.
+- `notion` and `behance` needed no change — Notion pages often do allow
+  framing (live_iframe), Behance doesn't, and the existing generic
+  iframe-check branch already handles both cases correctly as "website"
+  did.
 
 Link-recheck and screenshot-refresh (spec section 9) are built:
 `enqueueDueScheduledJobs()` (`src/lib/ingest/scheduled-jobs.ts`) runs at

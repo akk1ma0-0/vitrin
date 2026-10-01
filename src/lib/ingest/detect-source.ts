@@ -139,3 +139,16 @@ export function buildGoogleDocEmbedUrl(sourceType: SourceType, url: URL): string
   const base = url.origin + url.pathname.replace(/\/(edit|view|preview).*$/, "");
   return sourceType === "google_slides" ? `${base}/embed` : `${base}/preview`;
 }
+
+/**
+ * Telegram's public post widget: the plain post page (t.me/{channel}/{id})
+ * sends framing headers that block embedding, but the same URL with
+ * `?embed=1` is Telegram's own embeddable variant, designed to be iframed —
+ * see https://core.telegram.org/widgets/post.
+ */
+export function buildTelegramEmbedUrl(url: URL): string | null {
+  const segments = url.pathname.split("/").filter(Boolean);
+  if (segments.length < 2) return null;
+  const [channel, postId] = segments;
+  return `https://t.me/${channel}/${postId}?embed=1`;
+}
