@@ -1,6 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { processWork } from "@/lib/ingest/process-work";
+import { recheckLink } from "@/lib/ingest/recheck-link";
+import { refreshScreenshot } from "@/lib/ingest/refresh-screenshot";
+import { enqueueDueScheduledJobs } from "@/lib/ingest/scheduled-jobs";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
 
@@ -17,21 +20,36 @@ function isAuthorized(request: NextRequest): boolean {
 }
 
 async function runJob(job: Job): Promise<void> {
+  const payload = job.payload as { workId?: string };
+
   if (job.type === "ingest_work") {
-    const payload = job.payload as { workId?: string };
     if (!payload.workId) throw new Error("missing_work_id");
     await processWork(payload.workId);
     return;
   }
-  // recheck_link, refresh_screenshot, moderate ship in stage 2 (spec section 9).
+  if (job.type === "recheck_link") {
+    if (!payload.workId) throw new Error("missing_work_id");
+    await recheckLink(payload.workId);
+    return;
+  }
+  if (job.type === "refresh_screenshot") {
+    if (!payload.workId) throw new Error("missing_work_id");
+    await refreshScreenshot(payload.workId);
+    return;
+  }
+  // moderate ships in stage 2 (spec section 9).
   throw new Error(`unsupported_job_type:${job.type}`);
 }
 
-/** Called by Vercel Cron every minute, and fire-and-forget right after a work is created. */
+/** Called by Vercel Cron daily, and fire-and-forget right after a work is created. */
 export async function POST(request: NextRequest) {
   if (!isAuthorized(request)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+
+  // Best-effort: a failure here shouldn't block processing whatever's
+  // already queued.
+  await enqueueDueScheduledJobs().catch(() => {});
 
   const supabase = createSupabaseServiceRoleClient();
   const { data: jobs, error } = await supabase.rpc("claim_jobs", { p_limit: MAX_JOBS_PER_RUN });

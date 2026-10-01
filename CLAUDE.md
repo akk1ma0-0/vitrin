@@ -106,8 +106,29 @@ Built:
 
 Deliberately deferred to stage 2 per the spec's own plan: Paddle billing,
 Facebook/Telegram login, notion/telegram_post/behance/dribbble/
-upload_video/upload_pdf adapters, link-recheck and screenshot-refresh
-cron jobs.
+upload_video/upload_pdf adapters.
+
+Link-recheck and screenshot-refresh (spec section 9) are built:
+`enqueueDueScheduledJobs()` (`src/lib/ingest/scheduled-jobs.ts`) runs at
+the top of every `/api/cron/process-jobs` invocation — there's no separate
+Vercel Cron entry for it, since the Hobby plan only allows one daily
+schedule at all (see the cron note further down); folding it into the
+existing run avoids needing a second one. It queues a `recheck_link` job
+for every work with a `source_url` whose `last_checked_at` is stale (Pro:
+>24h, Free: >7d — the plan check is a second query, not a join, kept
+simple since profile counts are small at this stage), plus a
+`refresh_screenshot` job for the subset of those also stuck in
+`render_mode = "screenshot"`. Both de-duplicate against jobs already
+`queued`/`running` of the same type, so a backlog from
+`MAX_JOBS_PER_RUN` capping one run doesn't re-enqueue duplicates on the
+next. `recheck-link.ts` is deliberately lighter than a full
+`processWork()` re-run — reachability (HTTP 2xx/3xx via
+`safeIngestFetch`), Web Risk, and an iframe-header re-check only, no
+screenshot capture — so a routine recheck doesn't also mean a Microlink
+call; that's `refresh-screenshot.ts`'s job, kept separate on purpose. A
+broken link emails the owner once, on the transition into `is_broken`,
+not every day it stays broken (`BrokenLinkEmail`,
+`src/lib/services/email/broken-link-email.tsx`).
 
 Rate limiting (`src/lib/services/rate-limit.ts`) now covers every public,
 unauthenticated, abusable endpoint, not just hire/report: `/api/auth/login`

@@ -15,13 +15,13 @@ import { checkUrlSafety } from "@/lib/services/web-risk";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/supabase/database.types";
 
-const FULL_PAGE_MAX_HEIGHT = 15_000;
+export const FULL_PAGE_MAX_HEIGHT = 15_000;
 
 function buildFigmaEmbedUrl(url: string): string {
   return `https://www.figma.com/embed?embed_host=vitrin&url=${encodeURIComponent(url)}`;
 }
 
-async function uploadScreenshot(
+export async function uploadScreenshot(
   supabase: ReturnType<typeof createSupabaseServiceRoleClient>,
   profileId: string,
   workId: string,
