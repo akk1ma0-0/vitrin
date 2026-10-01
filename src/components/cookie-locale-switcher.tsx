@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Languages } from "lucide-react";
 
@@ -24,16 +23,22 @@ function setLocaleCookie(locale: Locale): void {
  * a username's public profile — where `LocaleSwitcher`'s "rewrite the URL"
  * approach doesn't apply (there's no locale segment to rewrite, and on a
  * profile page that segment is the username). Sets the `NEXT_LOCALE` cookie
- * `src/proxy.ts` already reads for exactly this case, then refreshes so the
- * server re-renders with it.
+ * `src/proxy.ts` already reads for exactly this case, then does a full page
+ * reload — not `router.refresh()`. `router.refresh()` only re-renders the
+ * current page/layout tree with fresh data; it doesn't re-run the root
+ * layout (`src/app/layout.tsx`), which is where the locale is fed into
+ * `NextIntlClientProvider` once via `getLocale()`. The result: server-
+ * rendered text updates, but every Client Component using
+ * `useTranslations()` keeps the old locale no matter how many times you
+ * switch (confirmed — only a real reload fixes it). `window.location.reload()`
+ * forces the whole app, root layout included, to render fresh.
  */
 export function CookieLocaleSwitcher() {
-  const router = useRouter();
   const locale = useLocale() as Locale;
 
   function switchTo(next: Locale) {
     setLocaleCookie(next);
-    router.refresh();
+    window.location.reload();
   }
 
   return (
