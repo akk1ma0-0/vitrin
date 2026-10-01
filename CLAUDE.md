@@ -232,10 +232,20 @@ other optional services.
   sparingly), drag-and-drop `@dnd-kit`.
 - **DB / Auth / Storage:** Supabase (Postgres, Supabase Auth, Supabase
   Storage) via `@supabase/ssr`. RLS is enabled on every table — see
-  `supabase/migrations/*.sql`. `src/lib/supabase/database.types.ts` is a
-  **hand-maintained** mirror of the migrations; regenerate it with
-  `supabase gen types typescript` once a live project exists and keep it in
-  sync after every migration until then.
+  `supabase/migrations/*.sql`. `src/lib/supabase/database.types.ts` is now
+  **generated**, not hand-maintained — regenerated once a live project
+  existed, via `npm run gen:types` (`supabase gen types typescript
+  --project-id qptcfmhxaopqlnritugm`, requires `supabase login` locally) or
+  the equivalent MCP call. Regenerate it after every migration — a `select
+  p.*` view (`catalog_profiles`) silently drops a new column from its type
+  until its `create or replace view` is re-run too (see
+  `0016_refresh_catalog_profiles_view.sql`, the second time this bit us
+  after `0013_catalog_search.sql`). One real wrinkle from switching to the
+  generated file: PostgREST can't carry a view's underlying NOT NULL
+  constraints through to its type, so every `catalog_profiles` column comes
+  back typed nullable even though none of them actually are — `profiles.ts`
+  has an `asPublicProfiles()` cast at the three places that consume it
+  rather than threading `| null` through every catalog consumer.
 - **Validation:** Zod, shared between forms and API routes
   (`src/lib/validation/schemas.ts`).
 - **Forms:** `react-hook-form` + `@hookform/resolvers/zod`.
@@ -260,7 +270,22 @@ other optional services.
   processor immediately after creating a work (fire-and-forget), so new
   links still ingest right away; the cron is only the retry/catch-up safety
   net for jobs that failed and are backing off. Tighten this back to
-  per-minute once the project is on a paid Vercel plan.
+  per-minute once the project is on a paid Vercel plan — until then,
+  `.github/workflows/process-jobs.yml` is a free stand-in: a GitHub Actions
+  scheduled workflow hits the same endpoint every 5 minutes (the shortest
+  interval Actions' own scheduler supports) with `CRON_SECRET` as a repo
+  secret, so the retry/backoff queue (30s/2min/10min) doesn't sit stuck for
+  up to 24h behind Vercel's daily-only schedule. It costs nothing beyond a
+  few seconds of Actions minutes per run and needs no new Vercel plan —
+  just `CRON_SECRET` added once as a GitHub Actions repo secret (same value
+  as the one already set in Vercel, since Vercel Cron's own requests rely
+  on it too). Other equally free alternatives, not implemented, if Actions'
+  5-minute floor or its queueing delays during busy periods ever become a
+  problem: an external scheduler like cron-job.org pointed at the same
+  endpoint (true 1-minute intervals, no code), or a `pg_cron` + `pg_net` job
+  inside Supabase itself calling it via HTTP (also free on Supabase's free
+  tier, and has the side benefit of counting as DB activity that helps keep
+  a free-tier project from auto-pausing).
 - **Tests:** Vitest for unit tests (business logic in `src/lib/**` is the
   priority — it's pure and cheap to test), Playwright for e2e later.
 - **Lint/format:** ESLint (flat config) + Prettier + `prettier-plugin-tailwindcss`.

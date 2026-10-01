@@ -5,6 +5,20 @@ export type PublicProfile = Database["public"]["Tables"]["profiles"]["Row"];
 export type PublicWork = Database["public"]["Tables"]["works"]["Row"];
 
 /**
+ * `catalog_profiles` (and the two RPCs built on it) return every column as
+ * nullable — PostgREST can't carry a view's underlying NOT NULL constraints
+ * through to its generated types — but every column it actually selects
+ * from `profiles` (0003_works.sql: `select p.*`) really is non-null there.
+ * This just recovers that known shape instead of threading `| null` through
+ * every consumer of the catalog.
+ */
+function asPublicProfiles(
+  rows: Database["public"]["Views"]["catalog_profiles"]["Row"][],
+): PublicProfile[] {
+  return rows as unknown as PublicProfile[];
+}
+
+/**
  * Looks up a profile by username for the public portfolio page. Returns
  * null both when the username doesn't exist and when Supabase isn't
  * configured yet, so pages can fall back to `notFound()` either way.
@@ -95,25 +109,25 @@ export async function getCatalogProfiles(query: CatalogQuery): Promise<CatalogRe
     if (q) {
       const { data, error } = await supabase.rpc("search_catalog_profiles", {
         search_query: q,
-        filter_specialization: query.specialization ?? null,
+        filter_specialization: query.specialization ?? undefined,
         available_only: query.availableOnly ?? false,
         sort_newest: query.sort === "newest",
       });
 
       if (error || !data) return { profiles: [], total: 0, page, pageSize };
       const from = (page - 1) * pageSize;
-      return { profiles: data.slice(from, from + pageSize), total: data.length, page, pageSize };
+      return { profiles: asPublicProfiles(data.slice(from, from + pageSize)), total: data.length, page, pageSize };
     }
 
     if (query.sort === "popular") {
       const { data, error } = await supabase.rpc("catalog_profiles_by_popularity", {
-        filter_specialization: query.specialization ?? null,
+        filter_specialization: query.specialization ?? undefined,
         available_only: query.availableOnly ?? false,
       });
 
       if (error || !data) return { profiles: [], total: 0, page, pageSize };
       const from = (page - 1) * pageSize;
-      return { profiles: data.slice(from, from + pageSize), total: data.length, page, pageSize };
+      return { profiles: asPublicProfiles(data.slice(from, from + pageSize)), total: data.length, page, pageSize };
     }
 
     let builder = supabase.from("catalog_profiles").select("*", { count: "exact" });
@@ -141,7 +155,7 @@ export async function getCatalogProfiles(query: CatalogQuery): Promise<CatalogRe
     const { data, error, count } = await builder.range(from, from + pageSize - 1);
 
     if (error || !data) return { profiles: [], total: 0, page, pageSize };
-    return { profiles: data, total: count ?? data.length, page, pageSize };
+    return { profiles: asPublicProfiles(data), total: count ?? data.length, page, pageSize };
   } catch {
     return { profiles: [], total: 0, page, pageSize };
   }

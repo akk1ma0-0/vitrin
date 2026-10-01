@@ -1,0 +1,25 @@
+name: Process ingest job queue
+
+# Vercel's free (Hobby) plan only allows a daily Cron schedule — see
+# vercel.json's "0 0 * * *" entry — but failed ingest jobs back off for as
+# little as 30s/2min/10min (src/app/api/cron/process-jobs/route.ts) and
+# would otherwise sit unretried for up to 24h. This workflow is a free
+# workaround: it hits the same endpoint every 5 minutes (the shortest
+# interval GitHub Actions' scheduler supports) so the backoff queue
+# actually gets drained promptly, at no cost beyond a few seconds of free
+# Actions minutes per run.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call /api/cron/process-jobs
+        run: |
+          curl --fail --silent --show-error \
+            --max-time 60 \
+            -X POST "https://vitrin.work/api/cron/process-jobs" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

@@ -36,7 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     profileEntries = (profiles ?? []).map((p) => ({
       url: `${siteUrl}/${p.username}`,
-      lastModified: p.updated_at,
+      lastModified: p.updated_at ?? undefined,
       changeFrequency: "weekly" as const,
       priority: 0.8,
     }));

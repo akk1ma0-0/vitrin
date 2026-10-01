@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "check:i18n": "node scripts/check-i18n.mjs",
+    "gen:types": "supabase gen types typescript --project-id qptcfmhxaopqlnritugm > src/lib/supabase/database.types.ts",
     "format": "prettier --write ."
   },
   "dependencies": {
