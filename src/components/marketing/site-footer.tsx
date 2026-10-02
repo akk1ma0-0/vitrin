@@ -10,20 +10,20 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
   return (
     <footer className="border-t border-border">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-10 text-sm text-muted-foreground sm:flex-row sm:justify-between">
-        <Link href={`/${locale}`}>
+        <Link href={`/${locale}`} className="py-2">
           <Logo />
         </Link>
-        <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-          <Link href={`/${locale}/pricing`} className="hover:text-foreground">
+        <nav className="flex flex-wrap items-center justify-center gap-x-4">
+          <Link href={`/${locale}/pricing`} className="py-3 hover:text-foreground">
             Pricing
           </Link>
-          <Link href={`/${locale}/terms`} className="hover:text-foreground">
+          <Link href={`/${locale}/terms`} className="py-3 hover:text-foreground">
             {t("terms")}
           </Link>
-          <Link href={`/${locale}/privacy`} className="hover:text-foreground">
+          <Link href={`/${locale}/privacy`} className="py-3 hover:text-foreground">
             {t("privacy")}
           </Link>
-          <Link href={`/${locale}/refund`} className="hover:text-foreground">
+          <Link href={`/${locale}/refund`} className="py-3 hover:text-foreground">
             {t("refund")}
           </Link>
         </nav>
