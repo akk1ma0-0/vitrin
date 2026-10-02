@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
 
-export function MobileNav() {
+export function MobileNav({ locale }: { locale: string }) {
   const [open, setOpen] = useState(false);
   const t = useTranslations("dashboard.nav");
 
@@ -21,7 +22,9 @@ export function MobileNav() {
       <DialogContent className="left-0 top-0 h-dvh w-64 max-w-[80vw] translate-x-0 translate-y-0 gap-0 rounded-none border-r border-border border-l-0 border-t-0 border-b-0 p-0 sm:rounded-none">
         <DialogTitle className="sr-only">{t("menu")}</DialogTitle>
         <div className="flex h-16 items-center px-4">
-          <Logo />
+          <Link href={`/${locale}`} onClick={() => setOpen(false)}>
+            <Logo />
+          </Link>
         </div>
         <SidebarNav onNavigate={() => setOpen(false)} />
       </DialogContent>

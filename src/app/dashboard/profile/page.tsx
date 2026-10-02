@@ -14,12 +14,9 @@ export default async function DashboardProfilePage() {
 
   return (
     <>
-      <ProfileEditForm profile={profile} />
+      <ProfileEditForm profile={profile} accountEmail={user.email ?? ""} />
       <div className="mx-auto mt-6 max-w-2xl">
-        <ConnectedAccountsForm
-          telegramLinked={profile.telegram_id != null}
-          telegramBotUsername={process.env.TELEGRAM_BOT_USERNAME ?? null}
-        />
+        <ConnectedAccountsForm />
       </div>
     </>
   );

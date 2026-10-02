@@ -16,16 +16,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ContactsEditor, cleanContacts, validateContacts } from "@/components/contacts-editor";
+import { parseContacts, type ContactEntry } from "@/lib/contacts";
 import { SPECIALIZATIONS, type Specialization } from "@/lib/specializations";
 import type { PublicProfile } from "@/lib/profiles";
 
-export function ProfileEditForm({ profile }: { profile: PublicProfile }) {
+export function ProfileEditForm({ profile, accountEmail }: { profile: PublicProfile; accountEmail: string }) {
   const t = useTranslations("dashboard.profile");
   const tOnboarding = useTranslations("onboarding");
   const tCommon = useTranslations("common");
   const tSpec = useTranslations("specializations");
-
-  const contacts = (profile.contacts ?? {}) as Record<string, string>;
+  const tContacts = useTranslations("contacts");
 
   const [displayName, setDisplayName] = useState(profile.display_name ?? "");
   const [headline, setHeadline] = useState(profile.headline ?? "");
@@ -38,13 +39,18 @@ export function ProfileEditForm({ profile }: { profile: PublicProfile }) {
   const [rateMax, setRateMax] = useState(profile.rate_max != null ? String(profile.rate_max) : "");
   const [rateCurrency, setRateCurrency] = useState(profile.rate_currency);
   const [rateUnit, setRateUnit] = useState<"hour" | "project" | "none">(profile.rate_unit ?? "none");
-  const [email, setEmail] = useState(contacts.email ?? "");
-  const [telegram, setTelegram] = useState(contacts.telegram ?? "");
-  const [whatsapp, setWhatsapp] = useState(contacts.whatsapp ?? "");
-  const [website, setWebsite] = useState(contacts.website ?? "");
+  const [contacts, setContacts] = useState<ContactEntry[]>(() => {
+    const parsed = parseContacts(profile.contacts);
+    return parsed.some((c) => c.type === "email") ? parsed : [{ type: "email", value: accountEmail }, ...parsed];
+  });
   const [saving, setSaving] = useState(false);
 
   async function handleSave() {
+    const contactsError = validateContacts(contacts);
+    if (contactsError) {
+      toast.error(tContacts(contactsError));
+      return;
+    }
     setSaving(true);
     try {
       const res = await fetch("/api/profile", {
@@ -60,12 +66,7 @@ export function ProfileEditForm({ profile }: { profile: PublicProfile }) {
           rateMax: rateMax === "" ? null : Number(rateMax),
           rateCurrency,
           rateUnit: rateUnit === "none" ? null : rateUnit,
-          contacts: {
-            email: email || undefined,
-            telegram: telegram || undefined,
-            whatsapp: whatsapp || undefined,
-            website: website || undefined,
-          },
+          contacts: cleanContacts(contacts),
         }),
       });
       if (!res.ok) throw new Error();
@@ -166,23 +167,8 @@ export function ProfileEditForm({ profile }: { profile: PublicProfile }) {
       </div>
 
       <div className="flex flex-col gap-3 rounded-xl border border-border p-4">
-        <h2 className="text-sm font-semibold">Contacts</h2>
-        <div className="flex flex-col gap-1.5">
-          <Label>Email</Label>
-          <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label>Telegram</Label>
-          <Input value={telegram} onChange={(e) => setTelegram(e.target.value)} placeholder="@username" />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label>WhatsApp</Label>
-          <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label>Website</Label>
-          <Input value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://" />
-        </div>
+        <h2 className="text-sm font-semibold">{tContacts("title")}</h2>
+        <ContactsEditor value={contacts} onChange={setContacts} />
       </div>
 
       <Button onClick={handleSave} disabled={saving} className="self-start">

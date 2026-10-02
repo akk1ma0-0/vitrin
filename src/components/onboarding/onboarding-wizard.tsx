@@ -17,6 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ContactsEditor, cleanContacts, validateContacts } from "@/components/contacts-editor";
+import type { ContactEntry } from "@/lib/contacts";
 import { SPECIALIZATIONS, type Specialization } from "@/lib/specializations";
 
 type Step = "username" | "profile" | "links" | "contacts" | "done";
@@ -33,6 +35,7 @@ export function OnboardingWizard({ initialEmail }: { initialEmail: string }) {
   const t = useTranslations("onboarding");
   const tCommon = useTranslations("common");
   const tSpec = useTranslations("specializations");
+  const tContacts = useTranslations("contacts");
   const router = useRouter();
   const [step, setStep] = useState<Step>("username");
   const [saving, setSaving] = useState(false);
@@ -50,9 +53,7 @@ export function OnboardingWizard({ initialEmail }: { initialEmail: string }) {
   const [linksText, setLinksText] = useState("");
   const [works, setWorks] = useState<WorkStatus[]>([]);
 
-  const [contactEmail, setContactEmail] = useState(initialEmail);
-  const [telegram, setTelegram] = useState("");
-  const [whatsapp, setWhatsapp] = useState("");
+  const [contacts, setContacts] = useState<ContactEntry[]>([{ type: "email", value: initialEmail }]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -142,15 +143,22 @@ export function OnboardingWizard({ initialEmail }: { initialEmail: string }) {
   }
 
   async function handleContactsSubmit() {
+    const contactsError = validateContacts(contacts);
+    if (contactsError) {
+      toast.error(tContacts(contactsError));
+      return;
+    }
     setSaving(true);
     try {
-      await fetch("/api/profile", {
+      const res = await fetch("/api/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contacts: { email: contactEmail || undefined, telegram: telegram || undefined, whatsapp: whatsapp || undefined },
-        }),
+        body: JSON.stringify({ contacts: cleanContacts(contacts) }),
       });
+      if (!res.ok) {
+        toast.error("Something went wrong");
+        return;
+      }
       await fetch("/api/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -288,29 +296,8 @@ export function OnboardingWizard({ initialEmail }: { initialEmail: string }) {
         <div className="flex flex-col gap-4">
           <h1 className="text-xl font-semibold">{t("step4Title")}</h1>
           <p className="text-sm text-muted-foreground">{t("contactsHint")}</p>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="contact-email">Email</Label>
-            <Input id="contact-email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="telegram">Telegram</Label>
-            <Input
-              id="telegram"
-              value={telegram}
-              onChange={(e) => setTelegram(e.target.value)}
-              placeholder="@username"
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="whatsapp">WhatsApp</Label>
-            <Input
-              id="whatsapp"
-              value={whatsapp}
-              onChange={(e) => setWhatsapp(e.target.value)}
-              placeholder="+1 555 000 0000"
-            />
-          </div>
-          <Button onClick={handleContactsSubmit} disabled={saving || (!contactEmail && !telegram && !whatsapp)}>
+          <ContactsEditor value={contacts} onChange={setContacts} />
+          <Button onClick={handleContactsSubmit} disabled={saving}>
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}
             {tCommon("continue")}
           </Button>

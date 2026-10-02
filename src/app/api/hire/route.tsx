@@ -10,6 +10,7 @@ import { moderateText } from "@/lib/services/moderation";
 import { sendEmail } from "@/lib/services/email/send";
 import { HireRequestEmail } from "@/lib/services/email/hire-request-email";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/server";
+import { firstContactEmail, parseContacts } from "@/lib/contacts";
 
 export async function POST(request: NextRequest) {
   const json = await request.json().catch(() => null);
@@ -72,8 +73,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "insert_failed" }, { status: 500 });
   }
 
-  const contacts = (profile.contacts ?? {}) as { email?: string };
-  const freelancerEmail = contacts.email;
+  // The first contact email is where the freelancer asked to be reached; the
+  // account email is the fallback for a profile that never saved contacts.
+  let freelancerEmail = firstContactEmail(parseContacts(profile.contacts));
+  if (!freelancerEmail) {
+    const { data: account } = await supabase.auth.admin.getUserById(profile.id);
+    freelancerEmail = account.user?.email ?? null;
+  }
 
   if (!moderation.flagged && freelancerEmail) {
     await sendEmail({

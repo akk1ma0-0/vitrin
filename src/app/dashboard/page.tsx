@@ -5,6 +5,7 @@ import { Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CopyLinkButton } from "@/components/dashboard/copy-link-button";
+import { parseContacts } from "@/lib/contacts";
 import { getOverviewStats } from "@/lib/dashboard";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -35,7 +36,7 @@ export default async function DashboardOverviewPage() {
     { done: Boolean(profile?.avatar_url), label: t("checklistAvatar") },
     { done: Boolean(profile?.bio), label: t("checklistBio") },
     { done: (worksCount ?? 0) >= 3, label: t("checklistWorks") },
-    { done: Boolean(profile?.contacts && Object.keys(profile.contacts).length > 0), label: t("checklistContacts") },
+    { done: parseContacts(profile?.contacts).length > 0, label: t("checklistContacts") },
     { done: Boolean(profile?.email_verified), label: t("checklistEmail") },
   ];
 

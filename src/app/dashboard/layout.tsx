@@ -43,7 +43,10 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       <div className="flex flex-1 flex-col">
         <header className="flex h-16 items-center justify-between gap-2 border-b border-border px-4">
           <div className="flex min-w-0 items-center gap-1">
-            <MobileNav />
+            <MobileNav locale={locale} />
+            <Link href={`/${locale}`} className="mr-2 shrink-0 md:hidden">
+              <Logo />
+            </Link>
             <Link
               href={`/${profile.username}`}
               target="_blank"

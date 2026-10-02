@@ -11,25 +11,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "@/components/auth/google-icon";
 import { FacebookIcon } from "@/components/auth/facebook-icon";
-import { TelegramLoginButton } from "@/components/auth/telegram-login-button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type OAuthProvider = "google" | "facebook";
 
 /**
- * Lets a signed-in user attach every login method to the same account
- * (Google/Facebook via Supabase's own identity linking, Telegram via our
- * custom bridge in /api/auth/telegram/link) and set/change a password
- * regardless of how they originally signed up — see `updateUser({
- * password })`, which Supabase explicitly supports for OAuth-only accounts.
+ * Lets a signed-in user attach Google and Facebook to the same account via
+ * Supabase identity linking, and set/change a password regardless of how
+ * they originally signed up — `updateUser({ password })` is explicitly
+ * supported for OAuth-only accounts.
  */
-export function ConnectedAccountsForm({
-  telegramLinked,
-  telegramBotUsername,
-}: {
-  telegramLinked: boolean;
-  telegramBotUsername: string | null;
-}) {
+export function ConnectedAccountsForm() {
   const t = useTranslations("dashboard.connectedAccounts");
   const router = useRouter();
   const pathname = usePathname();
@@ -39,7 +31,7 @@ export function ConnectedAccountsForm({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
-  const [pending, setPending] = useState<OAuthProvider | "telegram" | null>(null);
+  const [pending, setPending] = useState<OAuthProvider | null>(null);
 
   async function refreshIdentities() {
     const supabase = createSupabaseBrowserClient();
@@ -53,18 +45,8 @@ export function ConnectedAccountsForm({
   }, []);
 
   useEffect(() => {
-    const telegramError = searchParams.get("telegram_error");
-    const telegramOk = searchParams.get("telegram_linked");
-    const authError = searchParams.get("auth_error");
-    if (!telegramError && !telegramOk && !authError) return;
-
-    if (telegramError) {
-      toast.error(telegramError === "already_linked" ? t("connectErrorAlreadyLinked") : t("connectErrorGeneric"));
-    } else if (telegramOk) {
-      toast.success(t("connectSuccess"));
-    } else if (authError) {
-      toast.error(t("connectErrorGeneric"));
-    }
+    if (!searchParams.get("auth_error")) return;
+    toast.error(t("connectErrorGeneric"));
     router.replace(pathname);
   }, [searchParams, pathname, router, t]);
 
@@ -100,20 +82,6 @@ export function ConnectedAccountsForm({
       }
       toast.success(t("disconnectSuccess"));
       await refreshIdentities();
-    } finally {
-      setPending(null);
-    }
-  }
-
-  async function handleDisconnectTelegram() {
-    setPending("telegram");
-    try {
-      const res = await fetch("/api/auth/telegram/unlink", { method: "POST" });
-      if (!res.ok) throw new Error();
-      toast.success(t("disconnectSuccess"));
-      router.refresh();
-    } catch {
-      toast.error(t("disconnectErrorLastMethod"));
     } finally {
       setPending(null);
     }
@@ -203,28 +171,6 @@ export function ConnectedAccountsForm({
           </Button>
         )}
       </div>
-
-      {telegramBotUsername && (
-        <div className="flex items-center justify-between gap-3 rounded-lg border border-border p-3">
-          <span className="text-sm font-medium">{t("telegram")}</span>
-          {telegramLinked ? (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleDisconnectTelegram}
-              disabled={pending === "telegram"}
-            >
-              {t("disconnect")}
-            </Button>
-          ) : (
-            <TelegramLoginButton
-              botUsername={telegramBotUsername}
-              authPath="/api/auth/telegram/link"
-              next="/dashboard/profile"
-            />
-          )}
-        </div>
-      )}
 
       <div className="flex flex-col gap-2 rounded-lg border border-border p-3">
         <span className="text-sm font-medium">{t("passwordTitle")}</span>

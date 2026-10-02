@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { CONTACT_TYPES, MAX_CONTACTS } from "@/lib/contacts";
 import { SPECIALIZATIONS, WORK_CATEGORIES } from "@/lib/specializations";
 import { validateUsernameFormat } from "@/lib/reserved-usernames";
 
@@ -13,22 +14,22 @@ export const usernameSchema = z
     }
   });
 
-export const contactsSchema = z
+export const contactEntrySchema = z
   .object({
-    telegram: z.string().max(100).optional(),
-    whatsapp: z.string().max(30).optional(),
-    email: z.string().email().optional(),
-    linkedin: z.string().url().optional(),
-    github: z.string().url().optional(),
-    behance: z.string().url().optional(),
-    dribbble: z.string().url().optional(),
-    instagram: z.string().max(100).optional(),
-    x: z.string().max(100).optional(),
-    website: z.string().url().optional(),
+    type: z.enum(CONTACT_TYPES),
+    value: z.string().trim().min(1).max(200),
   })
-  .refine((c) => Object.values(c).some((v) => v && v.length > 0), {
-    message: "at_least_one_contact_required",
+  .superRefine((entry, ctx) => {
+    if (entry.type === "email" && !z.string().email().safeParse(entry.value).success) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "invalid_email", path: ["value"] });
+    }
   });
+
+/** Any number of contact methods (duplicates allowed), but always at least one email. */
+export const contactsSchema = z
+  .array(contactEntrySchema)
+  .max(MAX_CONTACTS)
+  .refine((list) => list.some((c) => c.type === "email"), { message: "email_contact_required" });
 
 export const profileOnboardingSchema = z.object({
   username: usernameSchema,

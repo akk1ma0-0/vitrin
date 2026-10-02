@@ -105,8 +105,8 @@ Built:
   the "create my page" pitch doesn't apply to them.
 
 Deliberately deferred to stage 2 per the spec's own plan: Paddle billing.
-Facebook/Telegram login and the upload_video/upload_pdf adapters were also
-on that list but are now built — see further down.
+Facebook login and the upload_video/upload_pdf adapters were also on that
+list but are now built — see further down.
 
 Notion/Behance/Dribbble/Telegram-post source detection (`detectSource()`
 in `src/lib/ingest/detect-source.ts`) was already fully built — those 4
@@ -192,42 +192,36 @@ the owner creates a Facebook App and configures the Facebook provider in
 Supabase Auth (same caveat as Google, spec section 16) — see "What the
 owner still needs to provide" below.
 
-Telegram login works differently because Supabase Auth has no native
-Telegram provider. The login/signup pages render Telegram's own Login
-Widget (`TelegramLoginButton`, `src/components/auth/telegram-login-button.tsx`
-— the widget script is appended imperatively in a `useEffect` since it
-mounts its own iframe relative to `document.currentScript`, which plain
-JSX can't guarantee) in redirect mode: Telegram signs the user's data and
-navigates the browser to `data-auth-url` (`/api/auth/telegram`) instead of
-calling a JS callback, so verification happens entirely server-side.
-`verifyTelegramAuth()` (`src/lib/auth/telegram.ts`) re-derives the HMAC
-per Telegram's own spec and rejects a stale `auth_date` (>24h). The route
-then maps the Telegram account to a Supabase user via a deterministic
-synthetic email (`telegram-{id}@users.vitrin.work`) and
-`profiles.telegram_id` (`0015_telegram_auth.sql`): `generateLink({ type:
-"magiclink", email })` creates that user on first login (Supabase does
-this automatically for `magiclink`) or resolves to the existing one, and
-the returned `hashed_token` is immediately verified server-side
-(`supabase.auth.verifyOtp`) to set session cookies — the user never sees
-an email or clicks a link. Needs `TELEGRAM_BOT_TOKEN` (HMAC secret,
-server-only) and `TELEGRAM_BOT_USERNAME` (public, passed to the widget as
-a prop from the login/signup Server Components) from a bot registered via
-BotFather; the button simply doesn't render when
-`TELEGRAM_BOT_USERNAME` is unset, same graceful-degradation pattern as the
-other optional services.
+Telegram login was built (Telegram Login Widget + a server-side HMAC
+check) and then **removed on purpose**: the widget only shows a one-tap
+confirm when the browser already has a web.telegram.org session; otherwise
+it sends users to oauth.telegram.org's phone-number form, and the code
+there arrives as an in-app Telegram message people don't notice — real
+users got stuck. Telegram is now just a contact method (see below), not a
+way to sign in. `profiles.telegram_id` (0015) is left in place, unused:
+dropping it means dropping/recreating the `catalog_profiles` view and both
+catalog RPCs that return its row type, not worth it for a nullable column.
+Don't re-add Telegram login without solving that UX first.
+
+Contacts (`profiles.contacts`) are an ordered list of `{ type, value }`
+(0017_contacts_list.sql converted the old flat `{ telegram, email, ... }`
+object), so a freelancer can list several of one kind — two emails, two
+phones. Types, parsing and per-type link building live in
+`src/lib/contacts.ts`; `ContactsEditor` (`src/components/contacts-editor.tsx`)
+is the shared add/remove-rows editor used by onboarding and
+/dashboard/profile. The only hard rule (`contactsSchema`) is at least one
+email entry — onboarding prefills it with the account email, the editor
+won't let you remove or retype the last one, and nothing else is required.
+Hire-request notifications go to the first contact email, falling back to
+the auth account email.
 
 `/dashboard/profile` has a "login methods" card (`ConnectedAccountsForm`,
 `src/components/dashboard/connected-accounts-form.tsx`) so signing up with
 one method doesn't lock you out of the others: connect/disconnect Google
 and Facebook via Supabase's own `linkIdentity()`/`unlinkIdentity()` (this
 needs **manual linking enabled** in the Supabase dashboard — Authentication
-→ Providers — off by default; without it `linkIdentity()` errors), connect
-Telegram via the same widget pointed at a second route,
-`/api/auth/telegram/link` (verifies the signed payload like
-`/api/auth/telegram` does, but — since the user is already signed in —
-just sets `profiles.telegram_id` on their own row via RLS instead of
-minting a new session; a `23505` unique-violation means that Telegram
-account is already linked elsewhere), and set/change a password regardless
+→ Providers — off by default; without it `linkIdentity()` errors), and
+set/change a password regardless
 of how the account was created via `supabase.auth.updateUser({ password
 })` — Supabase explicitly supports this for OAuth-only accounts. The
 "has a password" check reads `identities` from `getUserIdentities()` for a
@@ -484,16 +478,10 @@ to get sign-up through to a working portfolio page. Deploy target is
 Vercel, project connected to this repo's default branch
 (`claude/wizardly-thompson-5t1u1c`). Also needed eventually: Paddle
 sandbox → live account (stage 2) and the domain `vitrin.work` with DNS
-access — a Vercel-assigned subdomain is fine for testing. Facebook and
-Telegram login are also optional in this sense — the buttons simply don't
-render (Telegram) or fail at click-time with Supabase returning a
-provider-not-enabled error (Facebook) until configured: Facebook needs a
-Facebook App (facebook login product enabled) with its App ID/secret
-entered into Supabase Auth's Facebook provider settings; Telegram needs a
-bot registered via [@BotFather](https://t.me/BotFather) (`/newbot`, then
-`/setdomain` pointed at `vitrin.work` — Telegram's widget refuses to load
-on an unregistered domain) with `TELEGRAM_BOT_TOKEN` and
-`TELEGRAM_BOT_USERNAME` set in the environment.
+access — a Vercel-assigned subdomain is fine for testing. Facebook login
+is also optional in this sense — the button fails at click-time with a
+provider-not-enabled error until a Facebook App's ID/secret are entered
+into Supabase Auth's Facebook provider settings.
 
 ## Commands
 
